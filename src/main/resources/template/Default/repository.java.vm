@@ -1,8 +1,8 @@
 ##定义初始变量
-#set($tableName = $tool.append($tableInfo.name, "Repository"))
+#set($repositoryName = $tool.append($tableInfo.name, "Repository"))
 #set($entityName = $tableInfo.name)
 ##设置回调
-$!callback.setFileName($tool.append($tableName, ".java"))
+$!callback.setFileName($tool.append($repositoryName, ".java"))
 $!callback.setSavePath($tool.append($tableInfo.savePath, "/repository"))
 
 ##拿到主键
@@ -19,10 +19,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 /**
- * $!{tableInfo.comment}($!{tableInfo.name})表数据库访问层
  *
  * @author $!author
  * @since $!time.currTime()
  */
-public interface $!{tableName} extends JpaRepository<$!{entityName},$!{pk.shortType}>{
+public interface $!{repositoryName} extends JpaRepository<$!{entityName},$!{pk.shortType}>{
 }

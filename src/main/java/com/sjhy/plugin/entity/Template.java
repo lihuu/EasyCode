@@ -23,7 +23,6 @@ public class Template implements Item {
     }
 
     public Template(String name, String code, boolean show) {
-        System.out.println("Is Show: " + show);
         this.name = name;
         this.code = code;
         this.show = show;

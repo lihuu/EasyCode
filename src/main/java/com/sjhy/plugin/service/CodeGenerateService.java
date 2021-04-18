@@ -2,11 +2,13 @@ package com.sjhy.plugin.service;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.sjhy.plugin.entity.ClassInfo;
 import com.sjhy.plugin.entity.TableInfo;
 import com.sjhy.plugin.entity.Template;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 代码生成服务，Project级别Service
@@ -33,9 +35,8 @@ public interface CodeGenerateService {
      * @param unifiedConfig 是否使用统一配置
      * @param title         是否显示提示
      * @param generateTests 是否生成测试用例
-     *
      */
-    void generateByUnifiedConfig(Collection<Template> templates, boolean unifiedConfig, boolean title,boolean generateTests);
+    void generateByUnifiedConfig(Collection<Template> templates, boolean unifiedConfig, boolean title, boolean generateTests);
 
     /**
      * 生成代码
@@ -45,4 +46,14 @@ public interface CodeGenerateService {
      * @return 生成好的代码
      */
     String generate(Template template, TableInfo tableInfo);
+
+    /**
+     * 生成代码
+     *
+     * @param template
+     * @param classInfo Entity Class
+     * @return
+     */
+    void generate(List<Template> template, ClassInfo classInfo);
+
 }

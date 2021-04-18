@@ -1,0 +1,62 @@
+package com.sjhy.plugin.actions;
+
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiJavaFile;
+import com.sjhy.plugin.entity.ClassInfo;
+import com.sjhy.plugin.entity.ColumnInfo;
+import com.sjhy.plugin.ui.CodeGenerateForm;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * 可以根据entity自动生成对应的代码，不用依赖于datasource 插件
+ *
+ * @author lihu <1449488533qq@gmail.com>
+ * @date 2021/4/18 17:52
+ */
+public class GenerateSimpleCode extends AnAction {
+    @Override
+    public void actionPerformed(@NotNull AnActionEvent e) {
+        System.out.println("Action Performed");
+        Project project = e.getProject();
+        if (project == null) {
+            return;
+        }
+        //获取触发事件的文件
+        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+        if(psiFile==null){
+            return;
+        }
+        PsiJavaFile psiJavaFile = null;
+        if(psiFile instanceof PsiJavaFile){
+            psiJavaFile = (PsiJavaFile)psiFile;
+        }
+        if(psiJavaFile==null){
+            return;
+        }
+        String classFileName=psiJavaFile.getName();
+        ClassInfo classInfo = new ClassInfo(classFileName.substring(0,classFileName.indexOf(".")),psiJavaFile.getPackageName());
+        List<PsiField> psiFieldList = Arrays.stream(psiJavaFile.getClasses()[0].getAllFields()).filter(f->f.hasAnnotation("Id")).collect(Collectors.toList());
+        if(!psiFieldList.isEmpty()){
+            PsiField psiField = psiFieldList.get(0);
+            String name = psiField.getName();
+            String type = psiField.getType().getCanonicalText();
+            ColumnInfo columnInfo = new ColumnInfo();
+            columnInfo.setType(type);
+            columnInfo.setShortType(type.substring(type.lastIndexOf(".")));
+            columnInfo.setName(name);
+            classInfo.setPkColumn(Collections.singletonList(columnInfo));
+        }
+
+        new CodeGenerateForm(project,classInfo).open();
+    }
+}

@@ -240,6 +240,10 @@
             <!--生成代码菜单-->
             <add-to-group group-id="DatabaseViewPopupMenu" anchor="first"/>
         </group>
+
+        <action id="GenerateSimpleCode" class="com.sjhy.plugin.actions.GenerateSimpleCode" text="GenerateSimpleCode">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
     </actions>
 
 </idea-plugin>
