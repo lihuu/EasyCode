@@ -1,10 +1,14 @@
 package com.sjhy.plugin.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import com.intellij.database.psi.DbTable;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 表信息
@@ -13,17 +17,15 @@ import java.util.List;
  * @version 1.0.0
  * @since 2018/07/17 13:10
  */
-@Data
-public class TableInfo {
+@Getter
+@Setter
+public class TableInfo extends EntityClassInfo {
     /**
      * 原始对象
      */
     @JsonIgnore
     private DbTable obj;
-    /**
-     * 表名（首字母大写）
-     */
-    private String name;
+
     /**
      * 表名前缀
      */
@@ -32,10 +34,7 @@ public class TableInfo {
      * 注释
      */
     private String comment;
-    /**
-     * 模板组名称
-     */
-    private String templateGroupName;
+
     /**
      * 所有列
      */
@@ -48,16 +47,27 @@ public class TableInfo {
      * 其他列
      */
     private List<ColumnInfo> otherColumn;
-    /**
-     * 保存的包名称
-     */
-    private String savePackageName;
-    /**
-     * 保存路径
-     */
-    private String savePath;
-    /**
-     * 保存的model名称
-     */
-    private String saveModelName;
+
+    @Override
+    public String getPackageName() {
+        return "";
+    }
+
+    @Override
+    public List<PropertyInfo> getAllProperties() {
+        return fullColumn.stream().map(columnInfo -> PropertyInfo.builder()
+            .name(columnInfo.getName())
+            .type(columnInfo.getType())
+            .shortType(columnInfo.getShortType())
+            .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PropertyInfo> primaryKeyProperties() {
+        return pkColumn.stream().map(columnInfo -> PropertyInfo.builder()
+            .name(columnInfo.getName())
+            .type(columnInfo.getType())
+            .shortType(columnInfo.getShortType())
+            .build()).collect(Collectors.toList());
+    }
 }

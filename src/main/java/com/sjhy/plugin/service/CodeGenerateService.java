@@ -2,7 +2,7 @@ package com.sjhy.plugin.service;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.sjhy.plugin.entity.ClassInfo;
+import com.sjhy.plugin.entity.EntityClassInfo;
 import com.sjhy.plugin.entity.TableInfo;
 import com.sjhy.plugin.entity.Template;
 import org.jetbrains.annotations.NotNull;
@@ -51,9 +51,9 @@ public interface CodeGenerateService {
      * 生成代码
      *
      * @param template
-     * @param classInfo Entity Class
+     * @param entityClassInfo Entity Class
      * @return
      */
-    void generate(List<Template> template, ClassInfo classInfo);
+    void generate(List<Template> template, EntityClassInfo entityClassInfo);
 
 }

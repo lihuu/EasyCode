@@ -8,12 +8,11 @@ import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.sjhy.plugin.entity.ClassInfo;
-import com.sjhy.plugin.entity.ColumnInfo;
+import com.sjhy.plugin.entity.PropertyInfo;
 import com.sjhy.plugin.ui.CodeGenerateForm;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,30 +32,31 @@ public class GenerateSimpleCode extends AnAction {
         }
         //获取触发事件的文件
         PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-        if(psiFile==null){
+        if (psiFile == null) {
             return;
         }
         PsiJavaFile psiJavaFile = null;
-        if(psiFile instanceof PsiJavaFile){
+        if (psiFile instanceof PsiJavaFile) {
             psiJavaFile = (PsiJavaFile)psiFile;
         }
-        if(psiJavaFile==null){
+        if (psiJavaFile == null) {
             return;
         }
-        String classFileName=psiJavaFile.getName();
-        ClassInfo classInfo = new ClassInfo(classFileName.substring(0,classFileName.indexOf(".")),psiJavaFile.getPackageName());
-        List<PsiField> psiFieldList = Arrays.stream(psiJavaFile.getClasses()[0].getAllFields()).filter(f->f.hasAnnotation("Id")).collect(Collectors.toList());
-        if(!psiFieldList.isEmpty()){
-            PsiField psiField = psiFieldList.get(0);
-            String name = psiField.getName();
-            String type = psiField.getType().getCanonicalText();
-            ColumnInfo columnInfo = new ColumnInfo();
-            columnInfo.setType(type);
-            columnInfo.setShortType(type.substring(type.lastIndexOf(".")));
-            columnInfo.setName(name);
-            classInfo.setPkColumn(Collections.singletonList(columnInfo));
+        String classFileName = psiJavaFile.getName();
+        ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
+        List<PsiField> psiFieldList = Arrays.stream(psiJavaFile.getClasses()[0].getAllFields()).filter(f -> f.hasAnnotation("Id")).collect(Collectors.toList());
+        if (!psiFieldList.isEmpty()) {
+            List<PropertyInfo> propertyInfos = psiFieldList.stream().map(psiField -> {
+                String name = psiField.getName();
+                String type = psiField.getType().getCanonicalText();
+                return PropertyInfo.builder()
+                    .type(type)
+                    .shortType(type.substring(type.lastIndexOf(".")))
+                    .name(name)
+                    .build();
+            }).collect(Collectors.toList());
+            classInfo.setPrimaryKeyProperties(propertyInfos);
         }
-
-        new CodeGenerateForm(project,classInfo).open();
+        new CodeGenerateForm(project, classInfo).open();
     }
 }

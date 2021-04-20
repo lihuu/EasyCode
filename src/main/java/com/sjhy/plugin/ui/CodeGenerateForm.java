@@ -9,7 +9,7 @@ import com.intellij.util.ExceptionUtil;
 import com.sjhy.plugin.config.Settings;
 import com.sjhy.plugin.constants.MsgValue;
 import com.sjhy.plugin.constants.StrState;
-import com.sjhy.plugin.entity.ClassInfo;
+import com.sjhy.plugin.entity.EntityClassInfo;
 import com.sjhy.plugin.entity.Template;
 import com.sjhy.plugin.entity.TemplateGroup;
 import com.sjhy.plugin.service.CodeGenerateService;
@@ -57,10 +57,7 @@ public class CodeGenerateForm extends JDialog {
     private JCheckBox allSelect;
     private JCheckBox generateTests;
     private JPanel templatesPannel;
-    private ClassInfo classInfo;
-
-
-
+    private final EntityClassInfo entityClassInfo;
 
     /**
      * 所有模板复选框
@@ -80,9 +77,9 @@ public class CodeGenerateForm extends JDialog {
         return ModuleManager.getInstance(project).findModuleByName(name);
     }
 
-    public CodeGenerateForm(Project project, ClassInfo classInfo) {
+    public CodeGenerateForm(Project project, EntityClassInfo entityClassInfo) {
         this.project = project;
-        this.classInfo = classInfo;
+        this.entityClassInfo = entityClassInfo;
         this.codeGenerateService = CodeGenerateService.getInstance(project);
         this.templateGroup = CurrGroupUtils.getCurrTemplateGroup();
         // 初始化module，存在资源路径的排前面
@@ -154,6 +151,11 @@ public class CodeGenerateForm extends JDialog {
             refreshPath();
         });
 
+        if (!StringUtils.isEmpty(entityClassInfo.getPackageName())) {
+            //设置默认的package name
+            packageField.setText(entityClassInfo.getPackageName());
+        }
+
         try {
             Class<?> cls = Class.forName("com.intellij.ide.util.PackageChooserDialog");
             //添加包选择事件
@@ -203,9 +205,9 @@ public class CodeGenerateForm extends JDialog {
 
         Settings settings = Settings.getInstance();
         String groupName = settings.getCurrTemplateGroupName();
-        if (!StringUtils.isEmpty(classInfo.getTemplateGroupName())) {
-            if (settings.getTemplateGroupMap().containsKey(classInfo.getTemplateGroupName())) {
-                groupName = classInfo.getTemplateGroupName();
+        if (!StringUtils.isEmpty(entityClassInfo.getTemplateGroupName())) {
+            if (settings.getTemplateGroupMap().containsKey(entityClassInfo.getTemplateGroupName())) {
+                groupName = entityClassInfo.getTemplateGroupName();
                 this.templateGroup = settings.getTemplateGroupMap().get(groupName);
                 // 选中的模板组发生变化，尝试重新初始化
                 initTemplates();
@@ -225,7 +227,7 @@ public class CodeGenerateForm extends JDialog {
             initTemplates();
             this.open();
         });
-        String savePath = classInfo.getSavePath();
+        String savePath = entityClassInfo.getSavePath();
         if (!StringUtils.isEmpty(savePath)) {
             // 判断是否需要拼接项目路径
             if (savePath.startsWith(StrState.RELATIVE_PATH)) {
@@ -305,11 +307,11 @@ public class CodeGenerateForm extends JDialog {
             }
         }
         // 保存配置
-        classInfo.setSavePath(savePath);
-        classInfo.setSavePackageName(packageField.getText());
-        classInfo.setTemplateGroupName((String)groupBox.getSelectedItem());
+        entityClassInfo.setSavePath(savePath);
+        entityClassInfo.setSavePackageName(packageField.getText());
+        entityClassInfo.setTemplateGroupName((String)groupBox.getSelectedItem());
         // 生成代码
-        codeGenerateService.generate(getSelectTemplate(), classInfo);
+        codeGenerateService.generate(getSelectTemplate(), entityClassInfo);
         // 关闭窗口
         dispose();
     }
