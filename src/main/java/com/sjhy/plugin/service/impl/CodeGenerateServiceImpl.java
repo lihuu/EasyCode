@@ -212,6 +212,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             Map<String, Object> param = getDefaultParam();
             param.put("classInfo", entityClassInfo);
             param.put("tableInfo", entityClassInfo);
+            param.put("entityClassInfo",entityClassInfo);
             saveFile(param, template, entityClassInfo, false);
         }
     }

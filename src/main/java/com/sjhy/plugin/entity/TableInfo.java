@@ -63,7 +63,7 @@ public class TableInfo extends EntityClassInfo {
     }
 
     @Override
-    public List<PropertyInfo> primaryKeyProperties() {
+    public List<PropertyInfo> getPrimaryKeyProperties() {
         return pkColumn.stream().map(columnInfo -> PropertyInfo.builder()
             .name(columnInfo.getName())
             .type(columnInfo.getType())

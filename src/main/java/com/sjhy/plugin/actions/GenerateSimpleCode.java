@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 可以根据entity自动生成对应的代码，不用依赖于datasource 插件
+ * 可以根据entity自动生成对应的代码，不用从数据库中获取
  *
  * @author lihu <1449488533qq@gmail.com>
  * @date 2021/4/18 17:52
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class GenerateSimpleCode extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        System.out.println("Action Performed");
         Project project = e.getProject();
         if (project == null) {
             return;
@@ -51,7 +50,7 @@ public class GenerateSimpleCode extends AnAction {
                 String type = psiField.getType().getCanonicalText();
                 return PropertyInfo.builder()
                     .type(type)
-                    .shortType(type.substring(type.lastIndexOf(".")))
+                    .shortType(type.substring(type.lastIndexOf(".") + 1))
                     .name(name)
                     .build();
             }).collect(Collectors.toList());

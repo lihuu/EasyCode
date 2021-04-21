@@ -3,10 +3,6 @@
 ##设置回调
 $!callback.setFileName($tool.append($controllerName, ".java"))
 $!callback.setSavePath($tool.append($tableInfo.savePath, "/controller"))
-##拿到主键
-#if(!$tableInfo.pkColumn.isEmpty())
-    #set($pk = $tableInfo.pkColumn.get(0))
-#end
 
 #if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}controller;
 
@@ -14,7 +10,6 @@ import $!{tableInfo.savePackageName}.entity.$!{tableInfo.name};
 import $!{tableInfo.savePackageName}.service.$!{tableInfo.name}Service;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 
 /**
  *
@@ -25,10 +20,8 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("$!tool.firstLowerCase($tableInfo.name)")
 public class $!{controllerName} {
-    /**
-    * 服务对象
-    */
-    private final  $!{tableInfo.name}Service $!tool.firstLowerCase($tableInfo.name)Service;
+
+    private final $!{tableInfo.name}Service $!tool.firstLowerCase($tableInfo.name)Service;
 
     public $!{controllerName}($!{tableInfo.name}Service $!tool.firstLowerCase($tableInfo.name)Service){
         this.$!tool.firstLowerCase($tableInfo.name)Service = $!tool.firstLowerCase($tableInfo.name)Service;

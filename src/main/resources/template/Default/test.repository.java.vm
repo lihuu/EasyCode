@@ -7,15 +7,14 @@ $!callback.setFileName($tool.append($tableName, ".java"))
 $!callback.setSavePath($tool.append($tool.replaceFirst($tableInfo.savePath,"/main/","/test/"), "/repository"))
 
 ##拿到主键
-#if(!$tableInfo.pkColumn.isEmpty())
-    #set($pk = $tableInfo.pkColumn.get(0))
-#end
-
 #if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}repository;
 
 import $!{tableInfo.savePackageName}.entity.$!{tableInfo.name};
-import org.springframework.data.jpa.repository.JpaRepository;
-import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 
 /**
@@ -23,8 +22,10 @@ import javax.annotation.Resource;
  * @author $!author
  * @since $!time.currTime()
  */
+@DataJpaTest
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.NONE)
 public class  $!{tableName}Test {
-    @Resource
+    @Autowired
     private $!testTargetName $!tool.firstLowerCase($!{testTargetName});
 
     @org.junit.Test

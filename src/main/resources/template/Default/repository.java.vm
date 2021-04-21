@@ -6,8 +6,8 @@ $!callback.setFileName($tool.append($repositoryName, ".java"))
 $!callback.setSavePath($tool.append($tableInfo.savePath, "/repository"))
 
 ##拿到主键
-#if(!$tableInfo.pkColumn.isEmpty())
-    #set($pk = $tableInfo.pkColumn.get(0))
+#if(!$tableInfo.primaryKeyProperties.isEmpty())
+    #set($pk = $tableInfo.primaryKeyProperties.get(0))
 #end
 
 #if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}repository;

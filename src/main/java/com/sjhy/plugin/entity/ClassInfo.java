@@ -24,12 +24,12 @@ public class ClassInfo extends EntityClassInfo {
 
     @Override
     public String getPackageName() {
-        return this.name;
+        return this.packageName;
     }
 
     @Override
     public String getName() {
-        return this.packageName;
+        return this.name;
     }
 
 }

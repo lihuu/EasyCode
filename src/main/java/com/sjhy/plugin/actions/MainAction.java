@@ -38,7 +38,7 @@ public class MainAction extends AnAction {
             return;
         }
 
-        // 校验类型映射
+        // 校验类型映射，如果存在未知的类型，引导用户自定义添加类型
         if (!TableInfoService.getInstance(project).typeValidator(CacheDataUtils.getInstance().getSelectDbTable())) {
             // 没通过不打开窗口
             return;
