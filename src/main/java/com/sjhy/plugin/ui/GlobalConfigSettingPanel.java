@@ -53,7 +53,7 @@ public class GlobalConfigSettingPanel implements Configurable {
     /**
      * 配置信息
      */
-    private Settings settings;
+    private final Settings settings;
 
     /**
      * 编辑框面板

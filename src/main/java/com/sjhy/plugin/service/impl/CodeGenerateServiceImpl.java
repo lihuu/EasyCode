@@ -26,19 +26,19 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     /**
      * 项目对象
      */
-    private Project project;
+    private final Project project;
     /**
      * 模型管理
      */
-    private ModuleManager moduleManager;
+    private final ModuleManager moduleManager;
     /**
      * 表信息服务
      */
-    private TableInfoService tableInfoService;
+    private final TableInfoService tableInfoService;
     /**
      * 缓存数据工具
      */
-    private CacheDataUtils cacheDataUtils;
+    private final CacheDataUtils cacheDataUtils;
     /**
      * 导入包时过滤的包前缀
      */

@@ -35,20 +35,20 @@ public class TableInfoServiceImpl implements TableInfoService {
     /**
      * 项目对象
      */
-    private Project project;
+    private final Project project;
 
     /**
      * 命名工具类
      */
-    private NameUtils nameUtils;
+    private final NameUtils nameUtils;
     /**
      * jackson格式化工具
      */
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
     /**
      * 文件工具类
      */
-    private FileUtils fileUtils;
+    private final FileUtils fileUtils;
 
     public TableInfoServiceImpl(Project project) {
         this.project = project;

@@ -28,7 +28,7 @@ public class GlobalTool extends NameUtils {
     /**
      * Jackson对象
      */
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * 私有构造方法
