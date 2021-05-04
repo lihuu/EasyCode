@@ -48,7 +48,7 @@ public class MainActionGroup extends ActionGroup {
      */
     @NotNull
     @Override
-    public AnAction[] getChildren(@Nullable AnActionEvent event) {
+    public AnAction @NotNull [] getChildren(@Nullable AnActionEvent event) {
         // 获取当前项目
         Project project = getEventProject(event);
         if (project == null) {

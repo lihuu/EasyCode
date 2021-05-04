@@ -61,7 +61,7 @@ public class VelocityUtils {
             StringBuilder builder = new StringBuilder("在生成代码时，模板发生了如下语法错误：\n");
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
-            builder.append(writer.toString());
+            builder.append(writer);
             return builder.toString().replace("\r", "");
         }
         // 返回结果
