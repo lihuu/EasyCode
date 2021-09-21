@@ -184,7 +184,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (path.startsWith(".")) {
             path = project.getBasePath() + path.substring(1);
         }
-        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), title,false).write();
+        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), title, false).write();
     }
 
     private void saveFile(Map<String, Object> param, Template template, MethodInfo methodInfo) {
@@ -204,7 +204,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             callback.setFileName(methodInfo.getContainingClassName() + "Test.java");
         }
         if (StringUtils.isEmpty(callback.getSavePath())) {
-            callback.setSavePath(project.getBasePath()+"/src/test/java/"+methodInfo.getClassInfo().getPackageName().replace(".","/"));
+            callback.setSavePath(project.getBasePath() + "/src/test/java/" + methodInfo.getClassInfo().getPackageName().replace(".", "/"));
         }
         String path = callback.getSavePath();
         path = path.replace("\\", "/");
@@ -212,7 +212,35 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (path.startsWith(".")) {
             path = project.getBasePath() + path.substring(1);
         }
-        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false,true).write();
+        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, true).write();
+    }
+
+    private void saveFile(Map<String, Object> param, Template template, ClassInfo classInfo) {
+        Callback callback = new Callback();
+        // 设置回调对象
+        param.put("callback", callback);
+        // 开始生成
+        String code = VelocityUtils.generate(template.getCode(), param);
+        // 清除前面空格
+        StringBuilder sb = new StringBuilder(code);
+        while (sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
+            sb.deleteCharAt(0);
+        }
+        code = sb.toString();
+        // 设置一个默认保存路径与默认文件名
+        if (StringUtils.isEmpty(callback.getFileName())) {
+            callback.setFileName(classInfo.getName() + "Test.java");
+        }
+        if (StringUtils.isEmpty(callback.getSavePath())) {
+            callback.setSavePath(project.getBasePath() + "/src/test/java/" + classInfo.getPackageName().replace(".", "/"));
+        }
+        String path = callback.getSavePath();
+        path = path.replace("\\", "/");
+        // 针对相对路径进行处理
+        if (path.startsWith(".")) {
+            path = project.getBasePath() + path.substring(1);
+        }
+        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, false).write();
     }
 
     /**
@@ -257,7 +285,9 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
     @Override
     public void generateTestCode(Template template, ClassInfo classInfo) {
-
+        Map<String, Object> param = getDefaultParam();
+        param.put("classInfo", classInfo);
+        saveFile(param, template, classInfo);
     }
 
     /**
