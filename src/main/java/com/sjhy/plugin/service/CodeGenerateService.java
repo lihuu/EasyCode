@@ -2,9 +2,8 @@ package com.sjhy.plugin.service;
 
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
-import com.sjhy.plugin.entity.EntityClassInfo;
-import com.sjhy.plugin.entity.TableInfo;
-import com.sjhy.plugin.entity.Template;
+import com.sjhy.plugin.entity.*;
+import org.graalvm.compiler.lir.LIRInstruction.Temp;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -55,5 +54,21 @@ public interface CodeGenerateService {
      * @return
      */
     void generate(List<Template> template, EntityClassInfo entityClassInfo);
+
+    /**
+     * 生成一个方法的测试测试代码
+     *
+     * @param template
+     * @param methodInfo
+     */
+    void generateTestCode(Template template, MethodInfo methodInfo);
+
+    /**
+     * 生成Java类的测试代码
+     *
+     * @param template
+     * @param classInfo
+     */
+    void generateTestCode(Template template, ClassInfo classInfo);
 
 }

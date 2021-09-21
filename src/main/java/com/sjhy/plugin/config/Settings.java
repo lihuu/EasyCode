@@ -109,9 +109,13 @@ public class Settings implements PersistentStateComponent<Settings> {
         if (this.templateGroupMap == null) {
             this.templateGroupMap = new LinkedHashMap<>();
         }
-        this.templateGroupMap.put(DEFAULT_NAME, loadTemplateGroup(DEFAULT_NAME, "entity.java", "repository.java","test.repository.java", "service.java", "serviceImpl.java", "controller.java", "test.controller.java", "debug.json"));
-        this.templateGroupMap.put("Mybatis", loadTemplateGroup("Mybatis", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java", "mapper.xml", "debug.json"));
+        this.templateGroupMap.put(DEFAULT_NAME,
+            loadTemplateGroup(DEFAULT_NAME, "entity.java", "repository.java", "test.repository.java", "service.java", "serviceImpl.java", "controller.java", "test.controller.java",
+                "debug.json"));
+        this.templateGroupMap.put("Mybatis",
+            loadTemplateGroup("Mybatis", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java", "mapper.xml", "debug.json"));
         this.templateGroupMap.put("MybatisPlus", loadTemplateGroup("MybatisPlus", "entity", "dao", "service", "serviceImpl", "controller"));
+        this.templateGroupMap.put("Test", loadTemplateGroup("Test", "test.common", "test.method"));
 
         //配置默认类型映射
         if (this.typeMapperGroupMap == null) {
@@ -163,7 +167,7 @@ public class Settings implements PersistentStateComponent<Settings> {
     private static String loadTemplate(String filePath) {
         try {
             URL url = Settings.class.getResource(filePath);
-            if(url==null){
+            if (url == null) {
                 return "";
             }
             return UrlUtil.loadText(url).replace("\r", "");
@@ -186,7 +190,7 @@ public class Settings implements PersistentStateComponent<Settings> {
         templateGroup.setElementList(new ArrayList<>());
         for (String templateName : templateNames) {
             String path = "/template/" + groupName + "/" + templateName + ".vm";
-            templateGroup.getElementList().add(new Template(templateName, loadTemplate(path),!(templateName.toLowerCase().contains("test"))));
+            templateGroup.getElementList().add(new Template(templateName, loadTemplate(path), !(templateName.toLowerCase().contains("test"))));
         }
         return templateGroup;
     }
@@ -241,8 +245,6 @@ public class Settings implements PersistentStateComponent<Settings> {
         settings.getTemplateGroupMap().put(newName, oldTemplateGroup);
         // 覆盖
         settings.getTemplateGroupMap().replace(DEFAULT_NAME, templateGroupMap.get(DEFAULT_NAME));
-
-
 
         // 全局配置备份
         GlobalConfigGroup oldGlobalConfigGroup = settings.getGlobalConfigGroupMap().get(DEFAULT_NAME);

@@ -1,0 +1,15 @@
+##定义初始变量
+#set($serviceName = $tool.append($tableInfo.name, "ServiceTest"))
+##设置回调
+$!callback.setFileName($tool.append($tableName, ".java"))
+$!callback.setSavePath($tool.append($tool.replaceFirst($tableInfo.savePath,"/main/","/test/"), "/service"))
+
+
+#if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}service;
+
+/**
+ * @author $!author
+ * @since $!time.currTime()
+ */
+public class  $!{serviceName}Test {
+}

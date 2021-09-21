@@ -7,6 +7,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
@@ -56,6 +57,12 @@ public class SaveFile {
      * 是否显示操作提示
      */
     private boolean operateTitle;
+
+    /**
+     * 追加到已经存在的文件中
+     */
+    private boolean append;
+
     /**
      * 文件工具类
      */
@@ -71,7 +78,7 @@ public class SaveFile {
      * @param reformat     是否重新格式化代码
      * @param operateTitle 操作提示
      */
-    public SaveFile(@NonNull Project project, @NonNull String path, @NonNull String fileName, String content, boolean reformat, boolean operateTitle) {
+    public SaveFile(@NonNull Project project, @NonNull String path, @NonNull String fileName, String content, boolean reformat, boolean operateTitle, boolean append) {
         this.path = path;
         this.project = project;
         this.fileName = fileName;
@@ -79,6 +86,7 @@ public class SaveFile {
         this.content = content.replace("\r", "");
         this.reformat = reformat;
         this.operateTitle = operateTitle;
+        this.append = append;
     }
 
     /**
@@ -167,7 +175,11 @@ public class SaveFile {
         }
         VirtualFile psiFile = directory.findChild(this.fileName);
         // 保存或覆盖
-        saveOrReplaceFile(psiFile, directory);
+        if (append) {
+            appendFile(psiFile, content);
+        } else {
+            saveOrReplaceFile(psiFile, directory);
+        }
     }
 
     /**
@@ -279,5 +291,25 @@ public class SaveFile {
      */
     private Document coverFile(VirtualFile file, String text) {
         return FileUtils.getInstance().writeFileContent(project, file, fileName, text);
+    }
+
+    /**
+     * 追加到Java文件中
+     *
+     * @param file
+     * @param text
+     * @return
+     */
+    private Document appendFile(VirtualFile file, String text) {
+        FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
+        Document oldDocument = fileDocumentManager.getDocument(file);
+        if (oldDocument == null) {
+            throw new RuntimeException("旧的文件不存在");
+        }
+        String allText = oldDocument.getText();
+        allText = allText.substring(0, allText.lastIndexOf("}")) + text + "}";
+        Document document = FileUtils.getInstance().writeFileContent(project, file, fileName, allText);
+        FileUtils.getInstance().reformatFile(project, file);
+        return document;
     }
 }

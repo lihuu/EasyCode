@@ -232,6 +232,11 @@
         <projectService serviceInterface="com.sjhy.plugin.service.CodeGenerateService" serviceImplementation="com.sjhy.plugin.service.impl.CodeGenerateServiceImpl"/>
         <!--系统设置面板-->
         <applicationConfigurable dynamic="true" instance="com.sjhy.plugin.ui.MainSetting"/>
+
+       <!-- <projectConfigurable parentId="tools" instance="com.sjhy.plugin.config.ProjectLevelSettings"
+                             id="com.sjhy.plugin.config.ProjectLevelSettings" displayName="My Project Settings"
+                             nonDefaultProject="true"/>-->
+
     </extensions>
 
     <actions>
@@ -242,6 +247,10 @@
         </group>
 
         <action id="GenerateSimpleCode" class="com.sjhy.plugin.actions.GenerateSimpleCode" text="GenerateSimpleCode">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
+
+        <action id="GenerateTest" class="com.sjhy.plugin.actions.GenerateTest" text="GenerateTest">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
     </actions>
