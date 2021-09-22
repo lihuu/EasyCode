@@ -294,7 +294,7 @@ public class SaveFile {
     }
 
     /**
-     * 追加到Java文件中
+     * 追加方法到Java文件中
      *
      * @param file
      * @param text

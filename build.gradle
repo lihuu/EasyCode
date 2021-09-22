@@ -26,8 +26,12 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
-    jcenter()
+//    jcenter()
     mavenCentral()
+    maven { url 'https://plugins.gradle.org/m2/' }
+    maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+    maven { url 'https://dl.bintray.com/jetbrains/intellij-plugin-service' }
+    maven { url 'https://dl.bintray.com/jetbrains/intellij-third-party-dependencies/' }
 }
 
 intellij {

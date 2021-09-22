@@ -3,7 +3,6 @@ package com.sjhy.plugin.service;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.sjhy.plugin.entity.*;
-import org.graalvm.compiler.lir.LIRInstruction.Temp;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

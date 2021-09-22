@@ -230,11 +230,12 @@
         <!--项目服务-->
         <projectService serviceInterface="com.sjhy.plugin.service.TableInfoService" serviceImplementation="com.sjhy.plugin.service.impl.TableInfoServiceImpl"/>
         <projectService serviceInterface="com.sjhy.plugin.service.CodeGenerateService" serviceImplementation="com.sjhy.plugin.service.impl.CodeGenerateServiceImpl"/>
+        <projectService serviceInterface="com.sjhy.plugin.service.ProjectLevelSettingsService" serviceImplementation="com.sjhy.plugin.service.impl.ProjectLevelSettingsServiceImpl"/>
         <!--系统设置面板-->
         <applicationConfigurable dynamic="true" instance="com.sjhy.plugin.ui.MainSetting"/>
 
-       <!-- <projectConfigurable parentId="tools" instance="com.sjhy.plugin.config.ProjectLevelSettings"
-                             id="com.sjhy.plugin.config.ProjectLevelSettings" displayName="My Project Settings"
+       <!-- <projectConfigurable parentId="tools" instance="com.sjhy.plugin.service.impl.ProjectLevelSettingsServiceImpl"
+                             id="com.sjhy.plugin.service.impl.ProjectLevelSettingsServiceImpl" displayName="My Project Settings"
                              nonDefaultProject="true"/>-->
 
     </extensions>

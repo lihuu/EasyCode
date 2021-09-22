@@ -203,6 +203,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (StringUtils.isEmpty(callback.getFileName())) {
             callback.setFileName(methodInfo.getContainingClassName() + "Test.java");
         }
+
         if (StringUtils.isEmpty(callback.getSavePath())) {
             callback.setSavePath(project.getBasePath() + "/src/test/java/" + methodInfo.getClassInfo().getPackageName().replace(".", "/"));
         }
