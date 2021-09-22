@@ -3,6 +3,7 @@ package com.sjhy.plugin.entity;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
@@ -174,12 +175,14 @@ public class SaveFile {
             return;
         }
         VirtualFile psiFile = directory.findChild(this.fileName);
-        // 保存或覆盖
+        // 保存或追加
         if (append) {
             appendFile(psiFile, content);
         } else {
             saveOrReplaceFile(psiFile, directory);
         }
+        assert psiFile != null;
+        FileEditorManager.getInstance(project).openFile(psiFile, true);
     }
 
     /**

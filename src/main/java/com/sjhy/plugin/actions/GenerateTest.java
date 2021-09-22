@@ -59,6 +59,9 @@ public class GenerateTest extends AnAction {
             PsiClass psiClass = (PsiClass)psiElement;
             String name = psiClass.getName();
             String qualifiedName = psiClass.getQualifiedName();
+            if (qualifiedName == null) {
+                return;
+            }
             //文件创建所有的
             ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
             Template template = Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.common".equals(t.getName())).findFirst()
