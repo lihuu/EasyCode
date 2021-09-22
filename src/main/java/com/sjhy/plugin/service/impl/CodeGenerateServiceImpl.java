@@ -11,7 +11,9 @@ import com.intellij.util.ReflectionUtil;
 import com.sjhy.plugin.config.Settings;
 import com.sjhy.plugin.constants.MsgValue;
 import com.sjhy.plugin.entity.*;
+import com.sjhy.plugin.model.ProjectSettingModel;
 import com.sjhy.plugin.service.CodeGenerateService;
+import com.sjhy.plugin.service.ProjectLevelSettingsService;
 import com.sjhy.plugin.service.TableInfoService;
 import com.sjhy.plugin.tool.*;
 
@@ -205,7 +207,18 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         }
 
         if (StringUtils.isEmpty(callback.getSavePath())) {
-            callback.setSavePath(project.getBasePath() + "/src/test/java/" + methodInfo.getClassInfo().getPackageName().replace(".", "/"));
+            ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
+            ProjectSettingModel state = projectLevelSettingsService.getState();
+            String savePath;
+            if (state != null && !StringUtils.isEmpty(state.getBaseTestSrcPath())) {
+                savePath = state.getBaseTestSrcPath();
+            } else {
+                savePath = project.getBasePath() + "/src/test/java/" + methodInfo.getClassInfo().getPackageName().replace(".", "/");
+                state = new ProjectSettingModel();
+                state.setBaseTestSrcPath(savePath);
+                projectLevelSettingsService.loadState(state);
+            }
+            callback.setSavePath(savePath);
         }
         String path = callback.getSavePath();
         path = path.replace("\\", "/");
@@ -233,7 +246,18 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             callback.setFileName(classInfo.getName() + "Test.java");
         }
         if (StringUtils.isEmpty(callback.getSavePath())) {
-            callback.setSavePath(project.getBasePath() + "/src/test/java/" + classInfo.getPackageName().replace(".", "/"));
+            ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
+            ProjectSettingModel state = projectLevelSettingsService.getState();
+            String savePath;
+            if (state != null && !StringUtils.isEmpty(state.getBaseTestSrcPath())) {
+                savePath = state.getBaseTestSrcPath();
+            } else {
+                savePath = project.getBasePath() + "/src/test/java/" + classInfo.getPackageName().replace(".", "/");
+                state = new ProjectSettingModel();
+                state.setBaseTestSrcPath(savePath);
+                projectLevelSettingsService.loadState(state);
+            }
+            callback.setSavePath(savePath);
         }
         String path = callback.getSavePath();
         path = path.replace("\\", "/");

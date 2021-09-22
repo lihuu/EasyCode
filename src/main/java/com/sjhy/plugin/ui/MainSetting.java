@@ -14,6 +14,7 @@ import com.sjhy.plugin.config.Settings;
 import com.sjhy.plugin.constants.MsgValue;
 import com.sjhy.plugin.constants.StrState;
 import com.sjhy.plugin.entity.*;
+import com.sjhy.plugin.service.ProjectLevelSettingsService;
 import com.sjhy.plugin.tool.*;
 import com.sjhy.plugin.ui.base.ListCheckboxPanel;
 import org.jetbrains.annotations.Nls;
@@ -59,6 +60,7 @@ public class MainSetting implements Configurable, Configurable.Composite {
      * 当前版本号
      */
     private JLabel versionLabel;
+    private JTextField testFilePath;
 
     /**
      * 重置列表

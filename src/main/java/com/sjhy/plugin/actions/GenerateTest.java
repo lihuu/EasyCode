@@ -56,7 +56,6 @@ public class GenerateTest extends AnAction {
                     .orElseThrow(() -> new RuntimeException("模块不存在"));
             CodeGenerateService.getInstance(project).generateTestCode(template, methodInfo);
         } else if (psiElement instanceof PsiClass) {
-
             PsiClass psiClass = (PsiClass)psiElement;
             String name = psiClass.getName();
             String qualifiedName = psiClass.getQualifiedName();
