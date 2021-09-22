@@ -12,7 +12,9 @@ import com.sjhy.plugin.constants.StrState;
 import com.sjhy.plugin.entity.EntityClassInfo;
 import com.sjhy.plugin.entity.Template;
 import com.sjhy.plugin.entity.TemplateGroup;
+import com.sjhy.plugin.model.ProjectSettingModel;
 import com.sjhy.plugin.service.CodeGenerateService;
+import com.sjhy.plugin.service.ProjectLevelSettingsService;
 import com.sjhy.plugin.tool.CurrGroupUtils;
 import com.sjhy.plugin.tool.ModuleUtils;
 import com.sjhy.plugin.tool.ProjectUtils;
@@ -27,10 +29,8 @@ import java.awt.event.FocusEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -84,12 +84,26 @@ public class CodeGenerateForm extends JDialog {
         this.templateGroup = CurrGroupUtils.getCurrTemplateGroup();
         // 初始化module，存在资源路径的排前面
         this.moduleList = new LinkedList<>();
-        for (Module module : ModuleManager.getInstance(project).getModules()) {
-            // 存在源代码文件夹放前面，否则放后面
-            if (ModuleUtils.existsSourcePath(module)) {
-                this.moduleList.add(0, module);
-            } else {
-                this.moduleList.add(module);
+        String lastedSelectedModuleName =
+            Optional.ofNullable(ProjectLevelSettingsService.getInstance(project).getState()).orElse(new ProjectSettingModel()).getLastedSelectedModuleName();
+        if (StringUtils.isEmpty(lastedSelectedModuleName)) {
+            for (Module module : ModuleManager.getInstance(project).getModules()) {
+                // 存在源代码文件夹放前面，否则放后面
+                if (ModuleUtils.existsSourcePath(module)) {
+                    this.moduleList.add(0, module);
+                } else {
+                    this.moduleList.add(module);
+                }
+            }
+        } else {
+            //上次选择的模块放在第一个
+            for (Module module : ModuleManager.getInstance(project).getModules()) {
+                // 存在源代码文件夹放前面，否则放后面
+                if (Objects.equals(lastedSelectedModuleName, module.getName())) {
+                    this.moduleList.add(0, module);
+                } else {
+                    this.moduleList.add(module);
+                }
             }
         }
         init();
@@ -148,6 +162,17 @@ public class CodeGenerateForm extends JDialog {
         //监听module选择事件
         moduleBox.addActionListener(e -> {
             // 刷新路径
+            Module selectModule = getSelectModule();
+            if (selectModule != null) {
+                ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
+                ProjectSettingModel state = projectLevelSettingsService.getState();
+                if (state == null) {
+                    state = new ProjectSettingModel();
+                }
+                state.setLastedSelectedModuleName(selectModule.getName());
+                projectLevelSettingsService.loadState(state);
+            }
+
             refreshPath();
         });
 

@@ -20,4 +20,6 @@ public class ProjectSettingModel {
      * 生成文件的默认保存目录，不用再选择了
      */
     private String baseSrcPath;
+
+    private String lastedSelectedModuleName;
 }
