@@ -207,17 +207,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         }
 
         if (StringUtils.isEmpty(callback.getSavePath())) {
-            ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
-            ProjectSettingModel state = projectLevelSettingsService.getState();
-            String savePath;
-            if (state != null && !StringUtils.isEmpty(state.getBaseTestSrcPath())) {
-                savePath = state.getBaseTestSrcPath();
-            } else {
-                savePath = project.getBasePath() + "/src/test/java/" + methodInfo.getClassInfo().getPackageName().replace(".", "/");
-                state = new ProjectSettingModel();
-                state.setBaseTestSrcPath(savePath);
-                projectLevelSettingsService.loadState(state);
-            }
+            String savePath = getDefaultTestSrcSavePath(project) + methodInfo.getClassInfo().getPackageName().replace(".", "/");
             callback.setSavePath(savePath);
         }
         String path = callback.getSavePath();
@@ -246,17 +236,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             callback.setFileName(classInfo.getName() + "Test.java");
         }
         if (StringUtils.isEmpty(callback.getSavePath())) {
-            ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
-            ProjectSettingModel state = projectLevelSettingsService.getState();
-            String savePath;
-            if (state != null && !StringUtils.isEmpty(state.getBaseTestSrcPath())) {
-                savePath = state.getBaseTestSrcPath();
-            } else {
-                savePath = project.getBasePath() + "/src/test/java/" + classInfo.getPackageName().replace(".", "/");
-                state = new ProjectSettingModel();
-                state.setBaseTestSrcPath(savePath);
-                projectLevelSettingsService.loadState(state);
-            }
+            String savePath = getDefaultTestSrcSavePath(project) + classInfo.getPackageName().replace(".", "/");
             callback.setSavePath(savePath);
         }
         String path = callback.getSavePath();
@@ -267,6 +247,25 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         }
         new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, false).write();
     }
+
+    private String getDefaultTestSrcSavePath(Project project){
+        //设置默认的保存的目录
+        //TODO 如果是多个模块的，默认取第一个
+        ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
+        ProjectSettingModel state = projectLevelSettingsService.getState();
+        String baseSavePath;
+        if (state != null && !StringUtils.isEmpty(state.getBaseTestSrcPath())) {
+            baseSavePath = state.getBaseTestSrcPath();
+        } else {
+            baseSavePath = project.getBasePath() + "/src/test/java/";
+            state = new ProjectSettingModel();
+            state.setBaseTestSrcPath(baseSavePath);
+            projectLevelSettingsService.loadState(state);
+        }
+        return baseSavePath;
+    }
+
+
 
     /**
      * 生成代码
