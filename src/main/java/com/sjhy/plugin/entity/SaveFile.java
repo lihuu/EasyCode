@@ -176,13 +176,15 @@ public class SaveFile {
         }
         VirtualFile psiFile = directory.findChild(this.fileName);
         // 保存或追加
+        VirtualFile editedFile;
         if (append) {
-            appendFile(psiFile, content);
+            editedFile = appendFile(psiFile, content);
         } else {
-            saveOrReplaceFile(psiFile, directory);
+            editedFile = saveOrReplaceFile(psiFile, directory);
         }
-        assert psiFile != null;
-        FileEditorManager.getInstance(project).openFile(psiFile, true);
+        if (editedFile != null) {
+            FileEditorManager.getInstance(project).openFile(editedFile, true);
+        }
     }
 
     /**
@@ -210,14 +212,14 @@ public class SaveFile {
      * @param file      文件
      * @param directory 目录
      */
-    private void saveOrReplaceFile(VirtualFile file, VirtualFile directory) {
+    private VirtualFile saveOrReplaceFile(VirtualFile file, VirtualFile directory) {
         PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
         Document document;
         // 文件不存在直接创建
         if (file == null) {
             file = fileUtils.createChildFile(project, directory, this.fileName);
             if (file == null) {
-                return;
+                return file;
             }
             document = coverFile(file);
         } else {
@@ -248,14 +250,13 @@ public class SaveFile {
                         }
                         FileType fileType = FileTypeManager.getInstance().getFileTypeByFileName(fileName);
                         CompareFileUtils.showCompareWindow(project, file, new LightVirtualFile(fileName, fileType, newText));
-                        return;
+                        return file;
                     case Messages.CANCEL:
                     default:
-                        return;
+                        return file;
                 }
             } else {
-                // 没有操作提示的情况下直接覆盖
-                document = coverFile(file);
+                return file;
             }
         }
         // 执行代码格式化操作
@@ -264,6 +265,7 @@ public class SaveFile {
         }
         // 提交文档改动，并非VCS中的提交文件
         psiDocumentManager.commitDocument(document);
+        return file;
     }
 
     private String getFileText(VirtualFile file) {
@@ -303,7 +305,7 @@ public class SaveFile {
      * @param text
      * @return
      */
-    private Document appendFile(VirtualFile file, String text) {
+    private VirtualFile appendFile(VirtualFile file, String text) {
         FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
         Document oldDocument = fileDocumentManager.getDocument(file);
         if (oldDocument == null) {
@@ -313,6 +315,6 @@ public class SaveFile {
         allText = allText.substring(0, allText.lastIndexOf("}")) + text + "}";
         Document document = FileUtils.getInstance().writeFileContent(project, file, fileName, allText);
         FileUtils.getInstance().reformatFile(project, file);
-        return document;
+        return file;
     }
 }
