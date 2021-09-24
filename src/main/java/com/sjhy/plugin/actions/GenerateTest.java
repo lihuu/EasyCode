@@ -13,6 +13,8 @@ import com.sjhy.plugin.service.CodeGenerateService;
 import org.apache.commons.codec.language.bm.Lang;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,7 +31,7 @@ public class GenerateTest extends AnAction {
         PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
         if (psiElement instanceof PsiMethodImpl) {
             //方法
-            PsiMethodImpl targetMethod = (PsiMethodImpl)psiElement;
+            PsiMethodImpl targetMethod = (PsiMethodImpl) psiElement;
             String methodName = targetMethod.getName();
             PsiParameterList parameterList = targetMethod.getParameterList();
             PsiClass containingClass = targetMethod.getContainingClass();
@@ -45,18 +47,18 @@ public class GenerateTest extends AnAction {
             ClassInfo classInfo = new ClassInfo(containingClassName, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
 
             MethodInfo methodInfo = MethodInfo.builder()
-                .methodName(methodName)
-                .containingClassName(containingClassName)
-                .classInfo(classInfo)
-                .methodParameters(Stream.of(parameterList.getParameters()).map(
-                    psiParameter -> PropertyInfo.builder().name(psiParameter.getName()).type(psiParameter.getType().getCanonicalText())
-                        .shortType(psiParameter.getType().getPresentableText()).build()).collect(Collectors.toList())).build();
+                    .methodName(methodName)
+                    .containingClassName(containingClassName)
+                    .classInfo(classInfo)
+                    .methodParameters(Stream.of(parameterList.getParameters()).map(
+                            psiParameter -> PropertyInfo.builder().name(psiParameter.getName()).type(psiParameter.getType().getCanonicalText())
+                                    .shortType(psiParameter.getType().getPresentableText()).build()).collect(Collectors.toList())).build();
             Template template =
-                Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.method".equals(t.getName())).findFirst()
-                    .orElseThrow(() -> new RuntimeException("模块不存在"));
+                    Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.method".equals(t.getName())).findFirst()
+                            .orElseThrow(() -> new RuntimeException("模块不存在"));
             CodeGenerateService.getInstance(project).generateTestCode(template, methodInfo);
         } else if (psiElement instanceof PsiClass) {
-            PsiClass psiClass = (PsiClass)psiElement;
+            PsiClass psiClass = (PsiClass) psiElement;
             String name = psiClass.getName();
             String qualifiedName = psiClass.getQualifiedName();
             if (qualifiedName == null) {
@@ -65,9 +67,18 @@ public class GenerateTest extends AnAction {
             //文件创建所有的
             ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
             Template template = Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.common".equals(t.getName())).findFirst()
-                .orElseThrow(() -> new RuntimeException("模板不存在"));
+                    .orElseThrow(() -> new RuntimeException("模板不存在"));
             CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
+        } else {
+            PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+            if (psiFile instanceof PsiJavaFile) {
+                PsiJavaFile psiJavaFile = (PsiJavaFile) psiFile;
+                String classFileName = psiJavaFile.getName();
+                ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
+                Template template = Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.common".equals(t.getName())).findFirst()
+                        .orElseThrow(() -> new RuntimeException("模板不存在"));
+                CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
+            }
         }
-
     }
 }
