@@ -1,5 +1,5 @@
 
-#if($classInfo.packageName)package $!{classInfo.packageName}.#{end}service;
+#if($classInfo.packageName)package $!{classInfo.packageName}#{end};
 
 /**
  * @author $!author
