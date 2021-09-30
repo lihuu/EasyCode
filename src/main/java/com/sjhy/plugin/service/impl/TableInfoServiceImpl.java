@@ -340,7 +340,7 @@ public class TableInfoServiceImpl implements TableInfoService {
             return;
         }
         // 获取保存文件
-        new SaveFile(project, dir.getPath(), getConfigFileName(oldTableInfo.getObj()), content, true, false,false).write();
+        new SaveFile(project, dir.getPath(), getConfigFileName(oldTableInfo.getObj()), content, true, false, false, false).write();
     }
 
     /**

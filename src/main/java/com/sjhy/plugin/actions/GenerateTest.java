@@ -7,6 +7,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiMethodImpl;
+import com.sjhy.plugin.comm.TargetTestFileNotFoundException;
 import com.sjhy.plugin.config.Settings;
 import com.sjhy.plugin.entity.*;
 import com.sjhy.plugin.service.CodeGenerateService;
@@ -45,7 +46,7 @@ public class GenerateTest extends AnAction {
                 qualifiedName = "";
             }
             ClassInfo classInfo = new ClassInfo(containingClassName, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
-
+            classInfo.setOpenFile(false);
             MethodInfo methodInfo = MethodInfo.builder()
                     .methodName(methodName)
                     .containingClassName(containingClassName)
@@ -55,8 +56,18 @@ public class GenerateTest extends AnAction {
                                     .shortType(psiParameter.getType().getPresentableText()).build()).collect(Collectors.toList())).build();
             Template template =
                     Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.method".equals(t.getName())).findFirst()
-                            .orElseThrow(() -> new RuntimeException("模块不存在"));
-            CodeGenerateService.getInstance(project).generateTestCode(template, methodInfo);
+                            .orElseThrow(() -> new RuntimeException("test.method 模板文件不存在"));
+            try {
+                CodeGenerateService.getInstance(project).generateTestCode(template, methodInfo);
+            } catch (TargetTestFileNotFoundException targetTestFileNotFoundException) {
+                //可能对应的文件不存在，如果不存在就先创建
+                Template testClassTemplate =
+                        Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.common".equals(t.getName())).findFirst()
+                                .orElseThrow(() -> new RuntimeException("test.common 模板文件不存在"));
+                CodeGenerateService.getInstance(project).generateTestCode(testClassTemplate, methodInfo.getClassInfo());
+                CodeGenerateService.getInstance(project).generateTestCode(template, methodInfo);
+            }
+
         } else if (psiElement instanceof PsiClass) {
             PsiClass psiClass = (PsiClass) psiElement;
             String name = psiClass.getName();

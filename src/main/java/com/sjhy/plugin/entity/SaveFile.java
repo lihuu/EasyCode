@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.testFramework.LightVirtualFile;
+import com.sjhy.plugin.comm.TargetTestFileNotFoundException;
 import com.sjhy.plugin.tool.CompareFileUtils;
 import com.sjhy.plugin.tool.FileUtils;
 import com.sjhy.plugin.tool.MessageDialogUtils;
@@ -65,6 +66,11 @@ public class SaveFile {
     private boolean append;
 
     /**
+     * 生成后，打开文件
+     */
+    private boolean openFile;
+
+    /**
      * 文件工具类
      */
     private FileUtils fileUtils = FileUtils.getInstance();
@@ -79,7 +85,7 @@ public class SaveFile {
      * @param reformat     是否重新格式化代码
      * @param operateTitle 操作提示
      */
-    public SaveFile(@NonNull Project project, @NonNull String path, @NonNull String fileName, String content, boolean reformat, boolean operateTitle, boolean append) {
+    public SaveFile(@NonNull Project project, @NonNull String path, @NonNull String fileName, String content, boolean reformat, boolean operateTitle, boolean append,boolean openFile) {
         this.path = path;
         this.project = project;
         this.fileName = fileName;
@@ -88,6 +94,7 @@ public class SaveFile {
         this.reformat = reformat;
         this.operateTitle = operateTitle;
         this.append = append;
+        this.openFile = openFile;
     }
 
     /**
@@ -307,13 +314,13 @@ public class SaveFile {
      */
     private VirtualFile appendFile(VirtualFile file, String text) {
         FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
-        Document oldDocument = fileDocumentManager.getDocument(file);
-        if (oldDocument == null) {
-            throw new RuntimeException("旧的文件不存在");
+        if (file == null) {
+            throw new TargetTestFileNotFoundException("旧的文件不存在");
         }
+        Document oldDocument = fileDocumentManager.getDocument(file);
         String allText = oldDocument.getText();
         allText = allText.substring(0, allText.lastIndexOf("}")) + text + "}";
-        Document document = FileUtils.getInstance().writeFileContent(project, file, fileName, allText);
+        FileUtils.getInstance().writeFileContent(project, file, fileName, allText);
         FileUtils.getInstance().reformatFile(project, file);
         return file;
     }

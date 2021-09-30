@@ -186,7 +186,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (path.startsWith(".")) {
             path = project.getBasePath() + path.substring(1);
         }
-        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), title, false).write();
+        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), title, false, false).write();
     }
 
     private void saveFile(Map<String, Object> param, Template template, MethodInfo methodInfo) {
@@ -216,7 +216,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (path.startsWith(".")) {
             path = project.getBasePath() + path.substring(1);
         }
-        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, true).write();
+        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, true, true).write();
     }
 
     private void saveFile(Map<String, Object> param, Template template, ClassInfo classInfo) {
@@ -245,10 +245,10 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (path.startsWith(".")) {
             path = project.getBasePath() + path.substring(1);
         }
-        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, false).write();
+        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, false,classInfo.isOpenFile()).write();
     }
 
-    private String getDefaultTestSrcSavePath(Project project){
+    private String getDefaultTestSrcSavePath(Project project) {
         //设置默认的保存的目录
         //TODO 如果是多个模块的，默认取第一个
         ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
@@ -264,7 +264,6 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         }
         return baseSavePath;
     }
-
 
 
     /**

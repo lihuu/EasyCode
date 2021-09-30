@@ -16,6 +16,7 @@ public class ClassInfo extends EntityClassInfo {
     private String packageName;
     private List<PropertyInfo> allProperties;
     private List<PropertyInfo> primaryKeyProperties;
+    private boolean openFile = true;
 
     public ClassInfo(String name, String packageName) {
         this.name = name;
