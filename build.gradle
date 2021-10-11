@@ -20,7 +20,7 @@ plugins {
 
 
 group 'com.sjhy'
-version '1.5.4'
+version '1.5.5'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8

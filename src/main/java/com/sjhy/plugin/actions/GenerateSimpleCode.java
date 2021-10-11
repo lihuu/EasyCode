@@ -43,7 +43,7 @@ public class GenerateSimpleCode extends AnAction {
         }
         String classFileName = psiJavaFile.getName();
         ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
-        List<PsiField> psiFieldList = Arrays.stream(psiJavaFile.getClasses()[0].getAllFields()).filter(f -> f.hasAnnotation("Id")).collect(Collectors.toList());
+        List<PsiField> psiFieldList = Arrays.stream(psiJavaFile.getClasses()[0].getAllFields()).filter(f -> f.hasAnnotation("javax.persistence.Id")).collect(Collectors.toList());
         if (!psiFieldList.isEmpty()) {
             List<PropertyInfo> propertyInfos = psiFieldList.stream().map(psiField -> {
                 String name = psiField.getName();

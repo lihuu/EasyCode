@@ -1,5 +1,6 @@
 package com.sjhy.plugin.ui;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -55,7 +56,6 @@ public class CodeGenerateForm extends JDialog {
     private JTextField pathField;
     private JButton choosePathButton;
     private JCheckBox allSelect;
-    private JCheckBox generateTests;
     private JPanel templatesPannel;
     private final EntityClassInfo entityClassInfo;
 
@@ -87,8 +87,8 @@ public class CodeGenerateForm extends JDialog {
         if (projectSettingModel == null) {
             projectSettingModel = new ProjectSettingModel();
         }
-        String lastSelectedTemplateGroup = Optional.ofNullable(projectSettingModel.getLastSelectedTemplateGroup()).orElse("Default");
-        this.templateGroup = CurrGroupUtils.getTemplateGroup(lastSelectedTemplateGroup);
+        this.templateGroup = CurrGroupUtils.getTemplateGroup(projectSettingModel.getLastSelectedTemplateGroup());
+        Logger.getInstance(CodeGenerateForm.class).info("选择的模板：" + templateGroup.getName());
         // 初始化module，存在资源路径的排前面
         this.moduleList = new LinkedList<>();
         String lastedSelectedModuleName = projectSettingModel.getLastedSelectedModuleName();
@@ -279,11 +279,10 @@ public class CodeGenerateForm extends JDialog {
         templatesPannel.removeAll();
         templatesPannel.setLayout(new GridLayout(6, 2));
         templateGroup.getElementList().forEach(template -> {
-            if (template.isShow()) {
-                JCheckBox checkBox = new JCheckBox(template.getName());
-                checkBoxList.add(checkBox);
-                templatesPannel.add(checkBox);
-            }
+            Logger.getInstance(CodeGenerateForm.class).info("模板的名称：" + template.getName());
+            JCheckBox checkBox = new JCheckBox(template.getName());
+            checkBoxList.add(checkBox);
+            templatesPannel.add(checkBox);
         });
         // 移除所有旧事件
         ActionListener[] actionListeners = allSelect.getActionListeners();
@@ -303,17 +302,10 @@ public class CodeGenerateForm extends JDialog {
      * @return 模板对象集合
      */
     private List<Template> getSelectTemplate() {
-        boolean generateTests = this.generateTests.isSelected();
         // 获取到已选择的复选框
         List<String> selectTemplateNameList = checkBoxList.stream().filter(JCheckBox::isSelected).map(JCheckBox::getText).collect(Collectors.toList());
         // 将复选框转换成对应的模板对象，如果勾选了生成测试用例，也加入
-        return selectTemplateNameList.stream().flatMap(name -> {
-            if (generateTests) {
-                return Stream.of(templateGroup.getTemplate(name), templateGroup.getTemplate("test." + name));
-            } else {
-                return Stream.of(templateGroup.getTemplate(name));
-            }
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        return selectTemplateNameList.stream().flatMap(name -> Stream.of(templateGroup.getTemplate(name))).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private void onOk() {
