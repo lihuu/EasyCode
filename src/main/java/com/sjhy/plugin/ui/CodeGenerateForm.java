@@ -70,7 +70,7 @@ public class CodeGenerateForm extends JDialog {
      * @return 选中的Module
      */
     private Module getSelectModule() {
-        String name = (String)moduleBox.getSelectedItem();
+        String name = (String) moduleBox.getSelectedItem();
         if (StringUtils.isEmpty(name)) {
             return null;
         }
@@ -81,11 +81,17 @@ public class CodeGenerateForm extends JDialog {
         this.project = project;
         this.entityClassInfo = entityClassInfo;
         this.codeGenerateService = CodeGenerateService.getInstance(project);
-        this.templateGroup = CurrGroupUtils.getCurrTemplateGroup();
+        //获取上次选择的模板组
+        ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
+        ProjectSettingModel projectSettingModel = projectLevelSettingsService.getState();
+        if (projectSettingModel == null) {
+            projectSettingModel = new ProjectSettingModel();
+        }
+        String lastSelectedTemplateGroup = Optional.ofNullable(projectSettingModel.getLastSelectedTemplateGroup()).orElse("Default");
+        this.templateGroup = CurrGroupUtils.getTemplateGroup(lastSelectedTemplateGroup);
         // 初始化module，存在资源路径的排前面
         this.moduleList = new LinkedList<>();
-        String lastedSelectedModuleName =
-            Optional.ofNullable(ProjectLevelSettingsService.getInstance(project).getState()).orElse(new ProjectSettingModel()).getLastedSelectedModuleName();
+        String lastedSelectedModuleName = projectSettingModel.getLastedSelectedModuleName();
         if (StringUtils.isEmpty(lastedSelectedModuleName)) {
             for (Module module : ModuleManager.getInstance(project).getModules()) {
                 // 存在源代码文件夹放前面，否则放后面
@@ -196,7 +202,7 @@ public class CodeGenerateForm extends JDialog {
                     Object psiPackage = getSelectedPackageMethod.invoke(dialog);
                     if (psiPackage != null) {
                         Method getQualifiedNameMethod = psiPackage.getClass().getMethod("getQualifiedName");
-                        String packageName = (String)getQualifiedNameMethod.invoke(psiPackage);
+                        String packageName = (String) getQualifiedNameMethod.invoke(psiPackage);
                         packageField.setText(packageName);
                         // 刷新路径
                         refreshPath();
@@ -228,8 +234,10 @@ public class CodeGenerateForm extends JDialog {
             new ChoosePathListener(project, getSelectModule(), pathField).onChoose(event);
         });
 
+        ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
+        ProjectSettingModel projectSettingModel = Optional.ofNullable(projectLevelSettingsService.getState()).orElse(new ProjectSettingModel());
         Settings settings = Settings.getInstance();
-        String groupName = settings.getCurrTemplateGroupName();
+        String groupName = projectSettingModel.getLastSelectedTemplateGroup();
         if (!StringUtils.isEmpty(entityClassInfo.getTemplateGroupName())) {
             if (settings.getTemplateGroupMap().containsKey(entityClassInfo.getTemplateGroupName())) {
                 groupName = entityClassInfo.getTemplateGroupName();
@@ -243,13 +251,15 @@ public class CodeGenerateForm extends JDialog {
         }
         groupBox.setSelectedItem(groupName);
         groupBox.addActionListener(e -> {
-            String selectedItem = (String)groupBox.getSelectedItem();
+            String selectedItem = (String) groupBox.getSelectedItem();
             if (this.templateGroup.getName().equals(selectedItem)) {
                 return;
             }
             this.templateGroup = settings.getTemplateGroupMap().get(selectedItem);
             // 选中的模板组发生变化，尝试重新初始化
             initTemplates();
+            projectSettingModel.setLastSelectedTemplateGroup(selectedItem);
+            projectLevelSettingsService.loadState(projectSettingModel);
             this.open();
         });
         String savePath = entityClassInfo.getSavePath();
@@ -334,7 +344,7 @@ public class CodeGenerateForm extends JDialog {
         // 保存配置
         entityClassInfo.setSavePath(savePath);
         entityClassInfo.setSavePackageName(packageField.getText());
-        entityClassInfo.setTemplateGroupName((String)groupBox.getSelectedItem());
+        entityClassInfo.setTemplateGroupName((String) groupBox.getSelectedItem());
         // 生成代码
         codeGenerateService.generate(getSelectTemplate(), entityClassInfo);
         // 关闭窗口

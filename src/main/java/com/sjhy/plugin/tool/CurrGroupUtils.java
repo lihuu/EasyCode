@@ -32,6 +32,11 @@ public final class CurrGroupUtils {
         return settings.getTemplateGroupMap().get(groupName);
     }
 
+    public static TemplateGroup getTemplateGroup(String groupName) {
+        Settings settings = Settings.getInstance();
+        return settings.getTemplateGroupMap().get(groupName);
+    }
+
     /**
      * 覆盖或添加模板组
      *
@@ -79,7 +84,7 @@ public final class CurrGroupUtils {
     /**
      * 覆盖或添加类型映射组
      *
-     * @param groupName         组名
+     * @param groupName       组名
      * @param typeMapperGroup 类型映射组对象
      */
     public static void setTypeMapperGroup(String groupName, TypeMapperGroup typeMapperGroup) {

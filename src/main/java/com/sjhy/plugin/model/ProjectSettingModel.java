@@ -1,5 +1,6 @@
 package com.sjhy.plugin.model;
 
+import com.sjhy.plugin.tool.StringUtils;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +27,18 @@ public class ProjectSettingModel {
      * 记住上次选择的模块（如果有多个模块的情况下）
      */
     private String lastedSelectedModuleName;
+
+    /**
+     * 上次选择的模板组
+     */
+    private String lastSelectedTemplateGroup;
+
+    public String getLastSelectedTemplateGroup() {
+        if (StringUtils.isEmpty(lastSelectedTemplateGroup)) {
+            return "Default";
+        } else {
+            return lastSelectedTemplateGroup;
+        }
+    }
+
 }
