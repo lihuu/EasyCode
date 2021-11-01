@@ -16,6 +16,7 @@ import com.sjhy.plugin.service.CodeGenerateService;
 import com.sjhy.plugin.service.ProjectLevelSettingsService;
 import com.sjhy.plugin.service.TableInfoService;
 import com.sjhy.plugin.tool.*;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -245,7 +246,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (path.startsWith(".")) {
             path = project.getBasePath() + path.substring(1);
         }
-        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, false,classInfo.isOpenFile()).write();
+        new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, false, classInfo.isOpenFile()).write();
     }
 
     private String getDefaultTestSrcSavePath(Project project) {
@@ -301,9 +302,21 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     public void generateTestCode(Template template, MethodInfo methodInfo) {
         Map<String, Object> param = getDefaultParam();
         param.put("methodInfo", methodInfo);
+        param.put("methodAnnotationMap", toAnnotationMap(methodInfo.getAnnotationInfos()));
+        param.put("classAnnotationMap", toAnnotationMap(methodInfo.getClassInfo().getAnnotationInfoList()));
         String parameters = methodInfo.getMethodParameters().stream().map(PropertyInfo::getType).collect(Collectors.joining(","));
         param.put("parameters", parameters);
         saveFile(param, template, methodInfo);
+    }
+
+    private Map<String, Map<String, Object>> toAnnotationMap(List<AnnotationInfo> annotationInfos) {
+        if (CollectionUtils.isEmpty(annotationInfos)) {
+            return Collections.emptyMap();
+        }
+        return annotationInfos.stream().collect(Collectors.toMap(AnnotationInfo::getName, AnnotationInfo::getAnnotationValues, (v1, v2) -> {
+            v1.putAll(v2);
+            return v1;
+        }));
     }
 
     @Override

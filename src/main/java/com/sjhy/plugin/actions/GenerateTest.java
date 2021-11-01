@@ -51,6 +51,7 @@ public class GenerateTest extends AnAction {
             }
             ClassInfo classInfo = new ClassInfo(containingClassName, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
             classInfo.setOpenFile(false);
+            classInfo.setAnnotationInfoList(buildAnnotationInfoList(containingClass.getAnnotations()));
             MethodInfo methodInfo = MethodInfo.builder()
                     .methodName(methodName)
                     .containingClassName(containingClassName)
