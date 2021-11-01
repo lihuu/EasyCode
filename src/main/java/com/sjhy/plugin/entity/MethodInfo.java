@@ -2,8 +2,10 @@ package com.sjhy.plugin.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -24,10 +26,13 @@ public class MethodInfo {
      */
     private final List<PropertyInfo> methodParameters;
 
+    private final List<AnnotationInfo> annotationInfos;
+
     /**
      * 方法对应的类的名字
      */
     private final String containingClassName;
 
     private final ClassInfo classInfo;
+
 }

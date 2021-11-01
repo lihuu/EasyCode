@@ -1,5 +1,6 @@
 package com.sjhy.plugin.actions;
 
+import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -14,8 +15,8 @@ import com.sjhy.plugin.service.CodeGenerateService;
 import org.apache.commons.codec.language.bm.Lang;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.List;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,13 +35,16 @@ public class GenerateTest extends AnAction {
             //方法
             PsiMethodImpl targetMethod = (PsiMethodImpl) psiElement;
             String methodName = targetMethod.getName();
+            PsiAnnotation[] annotations = targetMethod.getAnnotations();
+            //解析方法上面的注解
+            List<AnnotationInfo> methodAnnotationInfoList = buildAnnotationInfoList(annotations);
             PsiParameterList parameterList = targetMethod.getParameterList();
             PsiClass containingClass = targetMethod.getContainingClass();
             String containingClassName;
             String qualifiedName;
             if (containingClass != null) {
                 containingClassName = containingClass.getName();
-                qualifiedName = containingClass.getQualifiedName();
+                qualifiedName = Optional.ofNullable(containingClass.getQualifiedName()).orElse("");
             } else {
                 containingClassName = "";
                 qualifiedName = "";
@@ -51,6 +55,7 @@ public class GenerateTest extends AnAction {
                     .methodName(methodName)
                     .containingClassName(containingClassName)
                     .classInfo(classInfo)
+                    .annotationInfos(methodAnnotationInfoList)
                     .methodParameters(Stream.of(parameterList.getParameters()).map(
                             psiParameter -> PropertyInfo.builder().name(psiParameter.getName()).type(psiParameter.getType().getCanonicalText())
                                     .shortType(psiParameter.getType().getPresentableText()).build()).collect(Collectors.toList())).build();
@@ -90,6 +95,20 @@ public class GenerateTest extends AnAction {
                         .orElseThrow(() -> new RuntimeException("模板不存在"));
                 CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
             }
+        }
+    }
+
+    private List<AnnotationInfo> buildAnnotationInfoList(PsiAnnotation[] psiAnnotations) {
+        try {
+            return Arrays.stream(psiAnnotations).map(psiAnnotation -> {
+                String annotationQualifiedName = psiAnnotation.getQualifiedName();
+                Map<String, Object> annotationValues = Arrays.stream(psiAnnotation.getParameterList().getAttributes())
+                        .filter(psiNameValuePair -> psiNameValuePair.getAttributeValue() != null && psiNameValuePair.getAttributeValue() instanceof JvmAnnotationConstantValue)
+                        .collect(Collectors.toMap(PsiNameValuePair::getAttributeName, psiNameValuePair -> Optional.ofNullable(((JvmAnnotationConstantValue) psiNameValuePair.getAttributeValue()).getConstantValue()).orElse(new Object()), (v1, v2) -> v2));
+                return AnnotationInfo.builder().name(annotationQualifiedName).annotationValues(annotationValues).build();
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            return Collections.emptyList();
         }
     }
 }
