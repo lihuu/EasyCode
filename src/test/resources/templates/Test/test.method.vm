@@ -1,0 +1,13 @@
+##测试方法生成代码片段
+    /**
+    * @see $!{methodInfo.containingClassName}#$!{methodInfo.methodName}($!{parameters})
+    */
+    @Test
+    public void test$!tool.firstUpperCase($!{methodInfo.methodName})(){
+        #if($classInfo.name.contains("Controller"))
+        mockMvc.perform(get("")
+        .contentType("application/json;charset=utf8"))
+        .andExpect(status().isOk())
+        .andDo(print());
+        #end
+    }

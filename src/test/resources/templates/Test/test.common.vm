@@ -1,0 +1,34 @@
+package $!{classInfo.packageName};
+
+import org.junit.jupiter.api.Test;
+import lombok.SneakyThrows;
+import $!{classInfo.packageName}.$!{classInfo.name};
+
+#if($classInfo.name.contains("Controller"))
+    #set($baseClassName="BaseControllerTest")
+import com.marketup.base.BaseControllerTest;
+#elseif($classInfo.name.contains("Service"))
+    #set($baseClassName="BaseSpringTest")
+import org.springframework.beans.factory.annotation.Autowired;
+import com.marketup.base.BaseSpringTest;
+#elseif($classInfo.name.contains("Mock"))
+import com.marketup.base.BaseMockTest;
+    #set($baseClassName="BaseMockTest")
+#elseif($classInfo.name.contains("Repository"))
+    #set($baseClassName="BaseJpaTest")
+import org.springframework.beans.factory.annotation.Autowired;
+import com.marketup.base.BaseJpaTest;
+#else
+    #set($baseClassName="")
+#end
+
+/**
+* @author $!author
+* @since $!time.currTime()
+*/
+public class  $!{classInfo.name}Test #if($baseClassName.length()>0) extends $baseClassName  #end  {
+#if($baseClassName.equals("BaseSpringTest")||$baseClassName.equals("BaseJpaTest"))
+    @Autowired
+#end
+private $!{classInfo.name} $!tool.firstLowerCase($classInfo.name);
+}

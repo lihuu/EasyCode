@@ -1,9 +1,13 @@
+package $!{classInfo.packageName};
 
-#if($classInfo.packageName)package $!{classInfo.packageName}#{end};
+import org.junit.jupiter.api.Test;
+import lombok.SneakyThrows;
+import $!{classInfo.packageName}.$!{classInfo.name};
 
 /**
- * @author $!author
- * @since $!time.currTime()
- */
-public class  $!{classInfo.name}Test {
+* @author $!author
+* @since $!time.currTime()
+*/
+public class  $!{classInfo.name}Test  {
+private $!{classInfo.name} $!tool.firstLowerCase($classInfo.name);
 }
