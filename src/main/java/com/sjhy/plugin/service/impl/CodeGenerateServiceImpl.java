@@ -313,10 +313,14 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         if (CollectionUtils.isEmpty(annotationInfos)) {
             return Collections.emptyMap();
         }
-        return annotationInfos.stream().collect(Collectors.toMap(AnnotationInfo::getName, AnnotationInfo::getAnnotationValues, (v1, v2) -> {
+        return annotationInfos.stream().collect(Collectors.toMap(annotationInfo -> this.annotationSimpleName(annotationInfo.getName()), AnnotationInfo::getAnnotationValues, (v1, v2) -> {
             v1.putAll(v2);
             return v1;
         }));
+    }
+
+    private String annotationSimpleName(String name) {
+        return name.substring(name.lastIndexOf(".")+1);
     }
 
     @Override
