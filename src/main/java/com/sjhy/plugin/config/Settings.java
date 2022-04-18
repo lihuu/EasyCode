@@ -109,35 +109,16 @@ public class Settings implements PersistentStateComponent<Settings> {
         if (this.templateGroupMap == null) {
             this.templateGroupMap = new LinkedHashMap<>();
         }
-        this.templateGroupMap.put(DEFAULT_NAME,
-            loadTemplateGroup(DEFAULT_NAME, "entity.java", "repository.java", "test.repository.java", "service.java", "serviceImpl.java", "controller.java", "test.controller.java",
-                "debug.json"));
-        this.templateGroupMap.put("Mybatis",
-            loadTemplateGroup("Mybatis", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java", "mapper.xml", "debug.json"));
-        this.templateGroupMap.put("MybatisPlus", loadTemplateGroup("MybatisPlus", "entity", "dao", "service", "serviceImpl", "controller"));
-        this.templateGroupMap.put("Test", loadTemplateGroup("Test", "test.common", "test.method"));
+        
+        loadTemplateGroup();
 
         //配置默认类型映射
         if (this.typeMapperGroupMap == null) {
             this.typeMapperGroupMap = new LinkedHashMap<>();
         }
         TypeMapperGroup typeMapperGroup = new TypeMapperGroup();
-        List<TypeMapper> typeMapperList = new ArrayList<>();
-        typeMapperList.add(new TypeMapper("varchar(\\(\\d+\\))?", "java.lang.String"));
-        typeMapperList.add(new TypeMapper("char(\\(\\d+\\))?", "java.lang.String"));
-        typeMapperList.add(new TypeMapper("text", "java.lang.String"));
-        typeMapperList.add(new TypeMapper("decimal(\\(\\d+\\))?", "java.lang.Double"));
-        typeMapperList.add(new TypeMapper("decimal(\\(\\d+,\\d+\\))?", "java.lang.Double"));
-        typeMapperList.add(new TypeMapper("integer", "java.lang.Integer"));
-        typeMapperList.add(new TypeMapper("int(\\(\\d+\\))?", "java.lang.Integer"));
-        typeMapperList.add(new TypeMapper("int4", "java.lang.Integer"));
-        typeMapperList.add(new TypeMapper("int8", "java.lang.Long"));
-        typeMapperList.add(new TypeMapper("bigint(\\(\\d+\\))?", "java.lang.Long"));
-        typeMapperList.add(new TypeMapper("datetime", "java.util.Date"));
-        typeMapperList.add(new TypeMapper("timestamp", "java.util.Date"));
-        typeMapperList.add(new TypeMapper("boolean", "java.lang.Boolean"));
         typeMapperGroup.setName(DEFAULT_NAME);
-        typeMapperGroup.setElementList(typeMapperList);
+        typeMapperGroup.setElementList(buildTypeMappers());
         typeMapperGroupMap.put(DEFAULT_NAME, typeMapperGroup);
 
         //初始化表配置
@@ -156,6 +137,35 @@ public class Settings implements PersistentStateComponent<Settings> {
             this.globalConfigGroupMap = new LinkedHashMap<>();
         }
         this.globalConfigGroupMap.put(DEFAULT_NAME, loadGlobalConfigGroup(DEFAULT_NAME, "init", "define", "autoImport", "mybatisSupport"));
+    }
+
+    private void loadTemplateGroup() {
+        this.templateGroupMap.put(DEFAULT_NAME,
+            loadTemplateGroup(DEFAULT_NAME, "entity.java", "repository.java", "test.repository.java", "service.java","test.service.java", "serviceImpl.java", "controller.java", "test.controller.java",
+                "debug.json","test.common.java"));
+        this.templateGroupMap.put("Mybatis",
+            loadTemplateGroup("Mybatis", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java", "mapper.xml", "debug.json"));
+        this.templateGroupMap.put("MybatisPlus", loadTemplateGroup("MybatisPlus", "entity", "dao", "service", "serviceImpl", "controller"));
+        this.templateGroupMap.put("Test", loadTemplateGroup("Test", "test.common", "test.method"));
+    }
+
+    @NotNull
+    private List<TypeMapper> buildTypeMappers() {
+        List<TypeMapper> typeMapperList = new ArrayList<>();
+        typeMapperList.add(new TypeMapper("varchar(\\(\\d+\\))?", "java.lang.String"));
+        typeMapperList.add(new TypeMapper("char(\\(\\d+\\))?", "java.lang.String"));
+        typeMapperList.add(new TypeMapper("text", "java.lang.String"));
+        typeMapperList.add(new TypeMapper("decimal(\\(\\d+\\))?", "java.lang.Double"));
+        typeMapperList.add(new TypeMapper("decimal(\\(\\d+,\\d+\\))?", "java.lang.Double"));
+        typeMapperList.add(new TypeMapper("integer", "java.lang.Integer"));
+        typeMapperList.add(new TypeMapper("int(\\(\\d+\\))?", "java.lang.Integer"));
+        typeMapperList.add(new TypeMapper("int4", "java.lang.Integer"));
+        typeMapperList.add(new TypeMapper("int8", "java.lang.Long"));
+        typeMapperList.add(new TypeMapper("bigint(\\(\\d+\\))?", "java.lang.Long"));
+        typeMapperList.add(new TypeMapper("datetime", "java.util.Date"));
+        typeMapperList.add(new TypeMapper("timestamp", "java.util.Date"));
+        typeMapperList.add(new TypeMapper("boolean", "java.lang.Boolean"));
+        return typeMapperList;
     }
 
     /**

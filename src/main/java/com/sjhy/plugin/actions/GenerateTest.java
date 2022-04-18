@@ -58,8 +58,10 @@ public class GenerateTest extends AnAction {
                     .classInfo(classInfo)
                     .annotationInfos(methodAnnotationInfoList)
                     .methodParameters(Stream.of(parameterList.getParameters()).map(
-                            psiParameter -> PropertyInfo.builder().name(psiParameter.getName()).type(psiParameter.getType().getCanonicalText())
-                                    .shortType(psiParameter.getType().getPresentableText()).build()).collect(Collectors.toList())).build();
+                            psiParameter -> 
+                                PropertyInfo.builder().name(psiParameter.getName()).type(psiParameter.getType().getCanonicalText())
+                                    .shortType(psiParameter.getType().getPresentableText()).build()).collect(Collectors.toList())
+                    ).build();
             Template template =
                     Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.method".equals(t.getName())).findFirst()
                             .orElseThrow(() -> new RuntimeException("test.method 模板文件不存在"));
@@ -75,17 +77,7 @@ public class GenerateTest extends AnAction {
             }
 
         } else if (psiElement instanceof PsiClass) {
-            PsiClass psiClass = (PsiClass) psiElement;
-            String name = psiClass.getName();
-            String qualifiedName = psiClass.getQualifiedName();
-            if (qualifiedName == null) {
-                return;
-            }
-            //文件创建所有的
-            ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
-            Template template = Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.common".equals(t.getName())).findFirst()
-                    .orElseThrow(() -> new RuntimeException("模板不存在"));
-            CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
+            generateTestClass(project, (PsiClass)psiElement);
         } else {
             PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
             if (psiFile instanceof PsiJavaFile) {
@@ -97,6 +89,19 @@ public class GenerateTest extends AnAction {
                 CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
             }
         }
+    }
+
+    private void generateTestClass(Project project, PsiClass psiElement) {
+        String name = psiElement.getName();
+        String qualifiedName = psiElement.getQualifiedName();
+        if (qualifiedName == null) {
+            return;
+        }
+        //文件创建所有的
+        ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
+        Template template = Settings.getInstance().getTemplateGroupMap().get("Test").getElementList().stream().filter(t -> "test.common".equals(t.getName())).findFirst()
+                .orElseThrow(() -> new RuntimeException("模板不存在"));
+        CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
     }
 
     private List<AnnotationInfo> buildAnnotationInfoList(PsiAnnotation[] psiAnnotations) {

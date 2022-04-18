@@ -16,4 +16,6 @@ out/
 build/
 idea-sandbox
 
+.DS_Store
+
 
