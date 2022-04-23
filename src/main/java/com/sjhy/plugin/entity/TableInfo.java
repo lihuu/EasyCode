@@ -1,9 +1,5 @@
 package com.sjhy.plugin.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
-import com.intellij.database.psi.DbTable;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,11 +16,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class TableInfo extends EntityClassInfo {
-    /**
-     * 原始对象
-     */
-    @JsonIgnore
-    private DbTable obj;
 
     /**
      * 表名前缀

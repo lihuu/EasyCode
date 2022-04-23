@@ -213,8 +213,7 @@
     -->
     <!--必须为企业版-->
     <depends>com.intellij.modules.lang</depends>
-    <!--必须依赖Database Tool插件-->
-    <depends>com.intellij.database</depends>
+    <depends>com.intellij.java</depends>
 
     <application-components>
         <!--<component>-->
@@ -228,7 +227,6 @@
         <!--实例化配置信息服务-->
         <applicationService serviceImplementation="com.sjhy.plugin.config.Settings"/>
         <!--项目服务-->
-        <projectService serviceInterface="com.sjhy.plugin.service.TableInfoService" serviceImplementation="com.sjhy.plugin.service.impl.TableInfoServiceImpl"/>
         <projectService serviceInterface="com.sjhy.plugin.service.CodeGenerateService" serviceImplementation="com.sjhy.plugin.service.impl.CodeGenerateServiceImpl"/>
         <projectService serviceInterface="com.sjhy.plugin.service.ProjectLevelSettingsService" serviceImplementation="com.sjhy.plugin.service.impl.ProjectLevelSettingsServiceImpl"/>
         <!--系统设置面板-->
@@ -241,12 +239,6 @@
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
-        <group id="con.sjhy.easy.code.action" class="com.sjhy.plugin.actions.MainActionGroup" text="EasyCode" popup="true">
-            <!--生成代码菜单-->
-            <add-to-group group-id="DatabaseViewPopupMenu" anchor="first"/>
-        </group>
-
         <action id="GenerateSimpleCode" class="com.sjhy.plugin.actions.GenerateSimpleCode" text="GenerateSimpleCode">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>

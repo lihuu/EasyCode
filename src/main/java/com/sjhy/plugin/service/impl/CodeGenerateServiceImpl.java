@@ -1,20 +1,14 @@
 package com.sjhy.plugin.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.intellij.database.util.DasUtil;
-import com.intellij.database.util.DbUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.util.ReflectionUtil;
 import com.sjhy.plugin.config.Settings;
-import com.sjhy.plugin.constants.MsgValue;
 import com.sjhy.plugin.entity.*;
 import com.sjhy.plugin.model.ProjectSettingModel;
 import com.sjhy.plugin.service.CodeGenerateService;
 import com.sjhy.plugin.service.ProjectLevelSettingsService;
-import com.sjhy.plugin.service.TableInfoService;
 import com.sjhy.plugin.tool.*;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -38,11 +32,6 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     /**
      * 表信息服务
      */
-    private final TableInfoService tableInfoService;
-    /**
-     * 缓存数据工具
-     */
-    private final CacheDataUtils cacheDataUtils;
     /**
      * 导入包时过滤的包前缀
      */
@@ -51,60 +40,6 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     public CodeGenerateServiceImpl(Project project) {
         this.project = project;
         this.moduleManager = ModuleManager.getInstance(project);
-        this.tableInfoService = TableInfoService.getInstance(project);
-        this.cacheDataUtils = CacheDataUtils.getInstance();
-    }
-
-    /**
-     * 生成代码，并自动保存到对应位置，使用统一配置
-     *
-     * @param templates     模板
-     * @param unifiedConfig 是否使用统一配置
-     * @param title         是否显示提示
-     * @param generateTests 是否生成测试用例
-     */
-    @Override
-    public void generateByUnifiedConfig(Collection<Template> templates, boolean unifiedConfig, boolean title, boolean generateTests) {
-        // 获取选中表信息
-        TableInfo selectedTableInfo = tableInfoService.getTableInfoAndConfig(cacheDataUtils.getSelectDbTable());
-        // 获取所有选中的表信息
-        List<TableInfo> tableInfoList = tableInfoService.getTableInfoAndConfig(cacheDataUtils.getDbTableList());
-        // 校验选中表的保存路径是否正确
-        if (StringUtils.isEmpty(selectedTableInfo.getSavePath())) {
-            Messages.showInfoMessage(selectedTableInfo.getObj().getName() + "表配置信息不正确，请尝试重新配置", MsgValue.TITLE_INFO);
-            return;
-        }
-        // 将未配置的表进行配置覆盖
-        tableInfoList.forEach(tableInfo -> {
-            if (StringUtils.isEmpty(tableInfo.getSavePath())) {
-                tableInfo.setSaveModelName(selectedTableInfo.getSaveModelName());
-                tableInfo.setSavePackageName(selectedTableInfo.getSavePackageName());
-                tableInfo.setSavePath(selectedTableInfo.getSavePath());
-                tableInfoService.save(tableInfo);
-            }
-        });
-        // 如果使用统一配置，直接全部覆盖
-        if (unifiedConfig) {
-            tableInfoList.forEach(tableInfo -> {
-                tableInfo.setSaveModelName(selectedTableInfo.getSaveModelName());
-                tableInfo.setSavePackageName(selectedTableInfo.getSavePackageName());
-                tableInfo.setSavePath(selectedTableInfo.getSavePath());
-            });
-        }
-
-        // 生成代码
-        generate(templates, tableInfoList, title, generateTests);
-    }
-
-    /**
-     * 生成代码，并自动保存到对应位置
-     *
-     * @param templates     模板
-     * @param tableInfoList 表信息对象
-     * @param title         是否显示提示
-     */
-    private void generate(Collection<Template> templates, Collection<TableInfo> tableInfoList, boolean title, boolean generateTests) {
-        generate(templates, tableInfoList, title, null, generateTests);
     }
 
     /**
@@ -138,10 +73,6 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         // 生成代码
         for (TableInfo tableInfo : tableInfoList) {
             // 表名去除前缀
-            if (!StringUtils.isEmpty(tableInfo.getPreName()) && tableInfo.getObj().getName().startsWith(tableInfo.getPreName())) {
-                String newName = tableInfo.getObj().getName().substring(tableInfo.getPreName().length());
-                tableInfo.setName(NameUtils.getInstance().getClassName(newName));
-            }
             // 构建参数
             Map<String, Object> param = getDefaultParam();
             // 其他参数
@@ -365,9 +296,6 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         param.put("time", TimeUtils.getInstance());
         // 项目路径
         param.put("projectPath", project.getBasePath());
-        // Database数据库工具
-        param.put("dbUtil", ReflectionUtil.newInstance(DbUtil.class));
-        param.put("dasUtil", ReflectionUtil.newInstance(DasUtil.class));
         return param;
     }
 

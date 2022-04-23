@@ -1,7 +1,5 @@
 package com.sjhy.plugin.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.intellij.database.model.DasColumn;
 import lombok.Data;
 
 import java.util.Map;
@@ -15,11 +13,6 @@ import java.util.Map;
  */
 @Data
 public class ColumnInfo {
-    /**
-     * 原始对象
-     */
-    @JsonIgnore
-    private DasColumn obj;
     /**
      * 名称
      */
