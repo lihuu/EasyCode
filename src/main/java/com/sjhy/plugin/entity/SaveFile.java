@@ -318,6 +318,7 @@ public class SaveFile {
             throw new TargetTestFileNotFoundException("旧的文件不存在");
         }
         Document oldDocument = fileDocumentManager.getDocument(file);
+        assert oldDocument != null;
         String allText = oldDocument.getText();
         allText = allText.substring(0, allText.lastIndexOf("}")) + text + "}";
         FileUtils.getInstance().writeFileContent(project, file, fileName, allText);

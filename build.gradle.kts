@@ -1,34 +1,21 @@
 fun properties(key: String) = project.findProperty(key).toString()
 
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url = uri("https://plugins.gradle.org/m2/")
-        }
-        maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
-    }
-}
-
 //2.1 插件配置
 // 这两个插件是必备
 // 核心的组件使用 简称 例如 java
 // 第三方的组件使用全名 
 plugins {
-    `java-library`
-    id("org.jetbrains.intellij") version "1.5.3"
+    java
+    id("org.jetbrains.intellij") version "1.5.2"
 }
-
 
 group = properties("pluginGroup")
 version = properties("pluginVersion")
 
-
 repositories {
     mavenCentral()
-    maven { url = uri("https://plugins.gradle.org/m2/") }
-    maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
 }
+
 
 intellij {
 //    插件名称
@@ -57,8 +44,12 @@ dependencies {
 
 tasks.compileJava {
     options.encoding = "UTF-8"
+    sourceCompatibility = "11"
+    targetCompatibility = "11"
 }
 
 tasks.compileTestJava{
     options.encoding = "UTF-8"
+    sourceCompatibility = "11"
+    targetCompatibility = "11"
 }
