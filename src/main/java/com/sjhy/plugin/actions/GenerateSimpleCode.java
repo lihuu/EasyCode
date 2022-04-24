@@ -11,6 +11,7 @@ import com.sjhy.plugin.entity.ClassInfo;
 import com.sjhy.plugin.entity.PropertyInfo;
 import com.sjhy.plugin.ui.CodeGenerateForm;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,14 +31,7 @@ public class GenerateSimpleCode extends AnAction {
             return;
         }
         //获取触发事件的文件
-        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-        if (psiFile == null) {
-            return;
-        }
-        PsiJavaFile psiJavaFile = null;
-        if (psiFile instanceof PsiJavaFile) {
-            psiJavaFile = (PsiJavaFile)psiFile;
-        }
+        PsiJavaFile psiJavaFile = getPsiJavaFile(e);
         if (psiJavaFile == null) {
             return;
         }
@@ -57,5 +51,18 @@ public class GenerateSimpleCode extends AnAction {
             classInfo.setPrimaryKeyProperties(propertyInfos);
         }
         new CodeGenerateForm(project, classInfo).open();
+    }
+
+    @Nullable
+    private PsiJavaFile getPsiJavaFile(@NotNull AnActionEvent e) {
+        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+        if (psiFile == null) {
+            return null;
+        }
+        PsiJavaFile psiJavaFile = null;
+        if (psiFile instanceof PsiJavaFile) {
+            psiJavaFile = (PsiJavaFile)psiFile;
+        }
+        return psiJavaFile;
     }
 }

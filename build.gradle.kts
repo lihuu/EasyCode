@@ -28,7 +28,7 @@ intellij {
     // 各种版本去这里找
     // https://www.jetbrains.com/intellij-repository/releases
     // 依赖的插件
-    plugins.set(listOf("java", "DatabaseTools", "Velocity"))
+    plugins.set(listOf("java", "Velocity"))
     //Disables updating since-build attribute in plugin.xml
     //updateSinceUntilBuild false
     //downloadSources = true
