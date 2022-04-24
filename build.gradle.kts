@@ -38,18 +38,25 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
     compileOnly("org.projectlombok:lombok:1.18.22")
     annotationProcessor("org.projectlombok:lombok:1.18.22")
-    testImplementation("junit:junit:4.13.1")
+    testImplementation("junit:junit:4.13.2")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
 }
 
-tasks.compileJava {
-    options.encoding = "UTF-8"
-    sourceCompatibility = "11"
-    targetCompatibility = "11"
-}
 
-tasks.compileTestJava{
-    options.encoding = "UTF-8"
-    sourceCompatibility = "11"
-    targetCompatibility = "11"
+tasks{
+    compileJava{
+        options.encoding = "UTF-8"
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+    
+    compileTestJava{
+        options.encoding = "UTF-8"
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+    
+    wrapper{
+        gradleVersion = properties("gradleVersion")
+    }
 }
