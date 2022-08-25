@@ -10,12 +10,14 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.util.xmlb.annotations.Transient;
 import com.sjhy.plugin.entity.*;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 全局配置信息
@@ -97,7 +99,7 @@ public class Settings implements PersistentStateComponent<Settings> {
      */
     public void initDefault() {
         // 版本号
-        this.version = "1.2.4";
+        this.version = "1.6.0";
         // 作者名称
         this.author = "makejava";
         // 当前各项分组名称
@@ -109,7 +111,7 @@ public class Settings implements PersistentStateComponent<Settings> {
         if (this.templateGroupMap == null) {
             this.templateGroupMap = new LinkedHashMap<>();
         }
-        
+
         loadTemplateGroup();
 
         //配置默认类型映射
@@ -141,12 +143,14 @@ public class Settings implements PersistentStateComponent<Settings> {
 
     private void loadTemplateGroup() {
         this.templateGroupMap.put(DEFAULT_NAME,
-            loadTemplateGroup(DEFAULT_NAME, "entity.java", "repository.java", "test.repository.java", "service.java","test.service.java", "serviceImpl.java", "controller.java", "test.controller.java",
-                "debug.json","test.common.java"));
+            loadTemplateGroup(DEFAULT_NAME, "entity.java", "repository.java", "test.repository.java", "service.java", "test.service.java", "serviceImpl.java", "controller.java",
+                "test.controller.java",
+                "debug.json", "test.common.java"));
         this.templateGroupMap.put("Mybatis",
             loadTemplateGroup("Mybatis", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java", "mapper.xml", "debug.json"));
         this.templateGroupMap.put("MybatisPlus", loadTemplateGroup("MybatisPlus", "entity", "dao", "service", "serviceImpl", "controller"));
         this.templateGroupMap.put("Test", loadTemplateGroup("Test", "test.common", "test.method"));
+        this.templateGroupMap.put("Fenix", loadTemplateGroup("Fenix", "fenix.file.xml", "fenix.method.xml"));
     }
 
     @NotNull
@@ -255,6 +259,11 @@ public class Settings implements PersistentStateComponent<Settings> {
         settings.getTemplateGroupMap().put(newName, oldTemplateGroup);
         // 覆盖
         settings.getTemplateGroupMap().replace(DEFAULT_NAME, templateGroupMap.get(DEFAULT_NAME));
+        templateGroupMap.keySet().stream().filter(key->!settings.getTemplateGroupMap().containsKey(key))
+            .collect(Collectors.toList()).forEach(key -> {
+                settings.templateGroupMap.put(key, templateGroupMap.get(key));
+                this.templateGroupMap.put(key, templateGroupMap.get(key));
+            });
 
         // 全局配置备份
         GlobalConfigGroup oldGlobalConfigGroup = settings.getGlobalConfigGroupMap().get(DEFAULT_NAME);

@@ -1,3 +1,4 @@
+$!callback.setFileName($tool.append($classInfo.name, ".xml"))
 <fenix id="$!{methodInfo.methodName}">
-    
+
 </fenix>

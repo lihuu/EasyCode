@@ -30,25 +30,25 @@ public class GenerateFenixXml extends AnAction {
         }
         PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
         if (psiElement instanceof PsiMethodImpl) {
-            generateByMethod(project, (PsiMethodImpl)psiElement);
+            generateByMethod(project, (PsiMethodImpl)psiElement, "fenix.method.xml", "fenix.file.xml");
         } else if (psiElement instanceof PsiClass) {
             generateByClass(project, (PsiClass)psiElement);
         } else {
             PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
             if (psiFile instanceof PsiJavaFile) {
-                generateTestFile(project, (PsiJavaFile)psiFile, "fenix.file.xml");
+                generateFenixFile(project, (PsiJavaFile)psiFile, "fenix.file.xml");
             }
         }
     }
 
-    private void generateTestFile(Project project, PsiJavaFile psiJavaFile, String templateName) {
+    private void generateFenixFile(Project project, PsiJavaFile psiJavaFile, String templateName) {
         String classFileName = psiJavaFile.getName();
         ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
         Template template = getTemplate(templateName);
-        CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
+        CodeGenerateService.getInstance(project).generateFenixXml(template, classInfo);
     }
 
-    private void generateByMethod(Project project, PsiMethodImpl psiMethod) {
+    private void generateByMethod(Project project, PsiMethodImpl psiMethod, String methodTemplateName, String fileTemplateName) {
         String methodName = psiMethod.getName();
         PsiAnnotation[] annotations = psiMethod.getAnnotations();
         //解析方法上面的注解
@@ -74,14 +74,14 @@ public class GenerateFenixXml extends AnAction {
             .annotationInfos(methodAnnotationInfoList)
             .methodParameters(toMethodParameters(parameterList)
             ).build();
-        Template template = getTemplate("fenix.method.xml");
+        Template template = getTemplate(methodTemplateName);
         try {
-            CodeGenerateService.getInstance(project).generateTestCode(template, methodInfo);
+            CodeGenerateService.getInstance(project).generateFenixXml(template, methodInfo);
         } catch (TargetTestFileNotFoundException targetTestFileNotFoundException) {
             //可能对应的文件不存在，如果不存在就先创建
-            Template testClassTemplate = getTemplate("fenix.file.xml");
-            CodeGenerateService.getInstance(project).generateTestCode(testClassTemplate, methodInfo.getClassInfo());
-            CodeGenerateService.getInstance(project).generateTestCode(template, methodInfo);
+            Template testClassTemplate = getTemplate(fileTemplateName);
+            CodeGenerateService.getInstance(project).generateFenixXml(testClassTemplate, methodInfo.getClassInfo());
+            CodeGenerateService.getInstance(project).generateFenixXml(template, methodInfo);
         }
     }
 
@@ -115,7 +115,7 @@ public class GenerateFenixXml extends AnAction {
         //文件创建所有的
         ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
         Template template = getTemplate("fenix.file.xml");
-        CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
+        CodeGenerateService.getInstance(project).generateFenixXml(template, classInfo);
     }
 
     private List<AnnotationInfo> buildAnnotationInfoList(PsiAnnotation[] psiAnnotations) {

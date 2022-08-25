@@ -345,6 +345,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     private void generateCodeByMethodInfo(Template template, MethodInfo methodInfo, String defaultSavePath) {
         Map<String, Object> param = getDefaultParam();
         param.put("methodInfo", methodInfo);
+        param.put("classInfo",methodInfo.getClassInfo());
         param.put("methodAnnotationMap", toAnnotationMap(methodInfo.getAnnotationInfos()));
         param.put("classAnnotationMap", toAnnotationMap(methodInfo.getClassInfo().getAnnotationInfoList()));
         String parameters = methodInfo.getMethodParameters().stream().map(PropertyInfo::getType).collect(Collectors.joining(","));
