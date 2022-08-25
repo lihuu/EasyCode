@@ -8,7 +8,6 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
@@ -183,9 +182,16 @@ public class SaveFile {
         }
         VirtualFile psiFile = directory.findChild(this.fileName);
         // 保存或追加
-        VirtualFile editedFile;
+        VirtualFile editedFile = null;
         if (append) {
-            editedFile = appendFile(psiFile, content);
+            if(this.fileName.indexOf("java")>0){
+                editedFile = appendJavaFile(psiFile, content);
+            }
+
+            if(this.fileName.indexOf("xml")>0){
+                editedFile = appendXmlFile(psiFile, content);
+            }
+            
         } else {
             editedFile = saveOrReplaceFile(psiFile, directory);
         }
@@ -312,7 +318,7 @@ public class SaveFile {
      * @param text
      * @return
      */
-    private VirtualFile appendFile(VirtualFile file, String text) {
+    private VirtualFile appendJavaFile(VirtualFile file, String text) {
         FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
         if (file == null) {
             throw new TargetTestFileNotFoundException("旧的文件不存在");
@@ -321,6 +327,28 @@ public class SaveFile {
         assert oldDocument != null;
         String allText = oldDocument.getText();
         allText = allText.substring(0, allText.lastIndexOf("}")) + text + "}";
+        FileUtils.getInstance().writeFileContent(project, file, fileName, allText);
+        FileUtils.getInstance().reformatFile(project, file);
+        return file;
+    }
+
+    /**
+     * 追加方法到Java文件中
+     *
+     * @param file
+     * @param text
+     * @return
+     */
+    private VirtualFile appendXmlFile(VirtualFile file, String text) {
+        FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
+        if (file == null) {
+            throw new TargetTestFileNotFoundException("旧的文件不存在");
+        }
+        Document oldDocument = fileDocumentManager.getDocument(file);
+        assert oldDocument != null;
+        String allText = oldDocument.getText();
+        int endIndex = allText.lastIndexOf("<");
+        allText = allText.substring(0, endIndex) + text + allText.substring(endIndex);
         FileUtils.getInstance().writeFileContent(project, file, fileName, allText);
         FileUtils.getInstance().reformatFile(project, file);
         return file;

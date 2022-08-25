@@ -246,6 +246,10 @@
         <action id="GenerateTest" class="com.sjhy.plugin.actions.GenerateTest" text="GenerateTest">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
+
+        <action id="GenerateFenixXml" class="com.sjhy.plugin.actions.GenerateFenixXml" text="GenerateFenixXml">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
     </actions>
 
 </idea-plugin>

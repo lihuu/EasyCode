@@ -60,4 +60,19 @@ public interface CodeGenerateService {
      */
     void generateTestCode(Template template, ClassInfo classInfo);
 
+    /**
+     * 生成一个方法的测试测试代码
+     *
+     * @param template
+     * @param methodInfo
+     */
+    void generateFenixXml(Template template, MethodInfo methodInfo);
+
+    /**
+     * 生成Java类的测试代码
+     *
+     * @param template
+     * @param classInfo
+     */
+    void generateFenixXml(Template template, ClassInfo classInfo);
 }

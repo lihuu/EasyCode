@@ -23,6 +23,11 @@ public class ProjectSettingModel {
     private String baseSrcPath;
 
     /**
+     * fenix 文件的保存目录
+     */
+    private String baseFenixPath;
+
+    /**
      * 记住上次选择的模块（如果有多个模块的情况下）
      */
     private String lastedSelectedModuleName;

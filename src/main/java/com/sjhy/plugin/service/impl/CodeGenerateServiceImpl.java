@@ -121,7 +121,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), title, false, false).write();
     }
 
-    private void saveFile(Map<String, Object> param, Template template, MethodInfo methodInfo) {
+    private void saveFile(Map<String, Object> param, Template template, MethodInfo methodInfo, String defaultSavePath) {
         Callback callback = new Callback();
         // 设置回调对象
         param.put("callback", callback);
@@ -139,8 +139,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         }
 
         if (StringUtils.isEmpty(callback.getSavePath())) {
-            String savePath = getDefaultTestSrcSavePath(project) + methodInfo.getClassInfo().getPackageName().replace(".", "/");
-            callback.setSavePath(savePath);
+            callback.setSavePath(defaultSavePath);
         }
         String path = callback.getSavePath();
         path = path.replace("\\", "/");
@@ -151,7 +150,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, true, true).write();
     }
 
-    private void saveFile(Map<String, Object> param, Template template, ClassInfo classInfo) {
+    private void saveFile(Map<String, Object> param, Template template, ClassInfo classInfo, String defaultSavePath) {
         Callback callback = new Callback();
         // 设置回调对象
         param.put("callback", callback);
@@ -168,8 +167,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             callback.setFileName(classInfo.getName() + "Test.java");
         }
         if (StringUtils.isEmpty(callback.getSavePath())) {
-            String savePath = getDefaultTestSrcSavePath(project) + classInfo.getPackageName().replace(".", "/");
-            callback.setSavePath(savePath);
+            callback.setSavePath(defaultSavePath);
         }
         String path = callback.getSavePath();
         path = path.replace("\\", "/");
@@ -190,6 +188,23 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             baseSavePath = state.getBaseTestSrcPath();
         } else {
             baseSavePath = project.getBasePath() + "/src/test/java/";
+            state = new ProjectSettingModel();
+            state.setBaseTestSrcPath(baseSavePath);
+            projectLevelSettingsService.loadState(state);
+        }
+        return baseSavePath;
+    }
+
+
+    private String getDefaultFenixXmlSavePath(Project project) {
+        //设置默认的保存的目录
+        ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
+        ProjectSettingModel state = projectLevelSettingsService.getState();
+        String baseSavePath;
+        if (state != null && !StringUtils.isEmpty(state.getBaseFenixPath())) {
+            baseSavePath = state.getBaseFenixPath();
+        } else {
+            baseSavePath = project.getBasePath() + "/src/main/resources/";
             state = new ProjectSettingModel();
             state.setBaseTestSrcPath(baseSavePath);
             projectLevelSettingsService.loadState(state);
@@ -231,14 +246,10 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
     @Override
     public void generateTestCode(Template template, MethodInfo methodInfo) {
-        Map<String, Object> param = getDefaultParam();
-        param.put("methodInfo", methodInfo);
-        param.put("methodAnnotationMap", toAnnotationMap(methodInfo.getAnnotationInfos()));
-        param.put("classAnnotationMap", toAnnotationMap(methodInfo.getClassInfo().getAnnotationInfoList()));
-        String parameters = methodInfo.getMethodParameters().stream().map(PropertyInfo::getType).collect(Collectors.joining(","));
-        param.put("parameters", parameters);
-        saveFile(param, template, methodInfo);
+        String defaultSavePath = getDefaultTestSrcSavePath(project) + methodInfo.getClassInfo().getPackageName().replace(".", "/");
+        generateCodeByMethodInfo(template, methodInfo, defaultSavePath);
     }
+
 
     private Map<String, Map<String, Object>> toAnnotationMap(List<AnnotationInfo> annotationInfos) {
         if (CollectionUtils.isEmpty(annotationInfos)) {
@@ -256,9 +267,24 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
     @Override
     public void generateTestCode(Template template, ClassInfo classInfo) {
+        String defaultSavePath = getDefaultTestSrcSavePath(project) + classInfo.getPackageName().replace(".", "/");
+        generateCodeByClassInfo(template, classInfo, defaultSavePath);
+    }
+
+    private void generateCodeByClassInfo(Template template, ClassInfo classInfo, String defaultSavePath) {
         Map<String, Object> param = getDefaultParam();
         param.put("classInfo", classInfo);
-        saveFile(param, template, classInfo);
+        saveFile(param, template, classInfo, defaultSavePath);
+    }
+
+    @Override
+    public void generateFenixXml(Template template, MethodInfo methodInfo) {
+        generateCodeByMethodInfo(template, methodInfo, getDefaultFenixXmlSavePath(project));
+    }
+
+    @Override
+    public void generateFenixXml(Template template, ClassInfo classInfo) {
+        generateCodeByClassInfo(template, classInfo, getDefaultFenixXmlSavePath(project));
     }
 
     /**
@@ -314,5 +340,15 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
             }
         });
         return result;
+    }
+
+    private void generateCodeByMethodInfo(Template template, MethodInfo methodInfo, String defaultSavePath) {
+        Map<String, Object> param = getDefaultParam();
+        param.put("methodInfo", methodInfo);
+        param.put("methodAnnotationMap", toAnnotationMap(methodInfo.getAnnotationInfos()));
+        param.put("classAnnotationMap", toAnnotationMap(methodInfo.getClassInfo().getAnnotationInfoList()));
+        String parameters = methodInfo.getMethodParameters().stream().map(PropertyInfo::getType).collect(Collectors.joining(","));
+        param.put("parameters", parameters);
+        saveFile(param, template, methodInfo, defaultSavePath);
     }
 }
