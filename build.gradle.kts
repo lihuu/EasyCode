@@ -23,7 +23,7 @@ intellij {
     // 沙箱目录位置，用于保存IDEA的设置，默认在build文件下面，防止clean，放在根目录下。
     sandboxDir.set("${rootProject.rootDir}/idea-sandbox")
     // 开发环境运行时使用的版本
-    version.set("2022.1")
+    version.set("2022.2")
     type.set("IU")
     // 各种版本去这里找
     // https://www.jetbrains.com/intellij-repository/releases
