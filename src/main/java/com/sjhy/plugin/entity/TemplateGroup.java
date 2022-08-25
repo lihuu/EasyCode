@@ -25,26 +25,13 @@ public class TemplateGroup implements AbstractGroup<Template> {
      */
     private List<Template> elementList;
 
-    /**
-     * 模板 name 和 Template的映射
-     */
-    private Map<String, Template> templateMap;
-
     @Override
     public void setElementList(List<Template> elementList) {
         this.elementList = elementList;
     }
 
     public Template getTemplate(String name) {
-        if (this.templateMap == null||this.templateMap.isEmpty()) {
-            this.templateMap = elementList.stream().collect(Collectors.toMap(Template::getName, template -> template, (v1, v2) -> v2));
-        }
-        Template template = this.templateMap.get(name);
-        if(template==null){
-            template = elementList.stream().filter(element->element.getName().equals(name)).findFirst().orElse(null);
-            Optional.ofNullable(template).ifPresent((t)->this.templateMap.put(t.getName(),t));
-        }
-        return template;
+        return  elementList.stream().filter(element->element.getName().equals(name)).findFirst().orElse(null);
     }
 
 }
