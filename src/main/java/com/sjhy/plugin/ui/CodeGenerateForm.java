@@ -305,7 +305,7 @@ public class CodeGenerateForm extends JDialog {
         // 获取到已选择的复选框
         List<String> selectTemplateNameList = checkBoxList.stream().filter(JCheckBox::isSelected).map(JCheckBox::getText).collect(Collectors.toList());
         // 将复选框转换成对应的模板对象，如果勾选了生成测试用例，也加入
-        return selectTemplateNameList.stream().flatMap(name -> Stream.of(templateGroup.getTemplate(name))).filter(Objects::nonNull).collect(Collectors.toList());
+        return selectTemplateNameList.stream().map(name -> templateGroup.getTemplate(name)).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private void onOk() {
