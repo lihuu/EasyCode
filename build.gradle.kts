@@ -35,8 +35,8 @@ intellij {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
-    compileOnly("org.projectlombok:lombok:1.18.22")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
+    compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.22")
     testImplementation("junit:junit:4.13.2")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
