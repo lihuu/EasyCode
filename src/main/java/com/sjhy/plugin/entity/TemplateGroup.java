@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +39,12 @@ public class TemplateGroup implements AbstractGroup<Template> {
         if (this.templateMap == null||this.templateMap.isEmpty()) {
             this.templateMap = elementList.stream().collect(Collectors.toMap(Template::getName, template -> template, (v1, v2) -> v2));
         }
-        return this.templateMap.get(name);
+        Template template = this.templateMap.get(name);
+        if(template==null){
+            template = elementList.stream().filter(element->element.getName().equals(name)).findFirst().orElse(null);
+            Optional.ofNullable(template).ifPresent((t)->this.templateMap.put(t.getName(),t));
+        }
+        return template;
     }
 
 }
