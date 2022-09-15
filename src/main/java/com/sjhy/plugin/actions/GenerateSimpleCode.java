@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * 可以根据entity自动生成对应的代码，不用从数据库中获取
  *
  * @author lihu <1449488533qq@gmail.com>
- * @date 2021/4/18 17:52
+ * @since  2021/4/18 17:52
  */
 public class GenerateSimpleCode extends AnAction {
     @Override
@@ -48,6 +48,7 @@ public class GenerateSimpleCode extends AnAction {
                     .name(name)
                     .build();
             }).collect(Collectors.toList());
+            classInfo.setAllProperties(propertyInfos);
             classInfo.setPrimaryKeyProperties(propertyInfos);
         }
         new CodeGenerateForm(project, classInfo).open();
