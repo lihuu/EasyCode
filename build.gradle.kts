@@ -29,8 +29,9 @@ intellij {
     // https://www.jetbrains.com/intellij-repository/releases
     // 依赖的插件
     plugins.set(listOf("java", "Velocity"))
+    updateSinceUntilBuild.set(false)
     //Disables updating since-build attribute in plugin.xml
-    //updateSinceUntilBuild false
+    //updateSinceUntilBuild = false
     //downloadSources = true
 }
 
