@@ -24,11 +24,11 @@ intellij {
     sandboxDir.set("${rootProject.rootDir}/idea-sandbox")
     // 开发环境运行时使用的版本
     version.set("2022.2")
-    type.set("IU")
+    type.set("IC")
     // 各种版本去这里找
     // https://www.jetbrains.com/intellij-repository/releases
     // 依赖的插件
-    plugins.set(listOf("java", "Velocity"))
+    plugins.set(listOf("java"))
     updateSinceUntilBuild.set(false)
     //Disables updating since-build attribute in plugin.xml
     //updateSinceUntilBuild = false
