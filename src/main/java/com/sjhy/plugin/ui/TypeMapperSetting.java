@@ -75,12 +75,12 @@ public class TypeMapperSetting implements Configurable {
     /**
      * 全局配置服务
      */
-    private Settings settings;
+    private final Settings settings;
 
 
     public TypeMapperSetting(Settings settings) {
         this.settings = settings;
-        this.typeMapperGroupMap = CloneUtils.cloneByJson(settings.getTypeMapperGroupMap(), new TypeReference<Map<String, TypeMapperGroup>>() {});
+        this.typeMapperGroupMap = CloneUtils.cloneByJson(settings.getTypeMapperGroupMap(), new TypeReference<>() { });
         this.currGroupName = settings.getCurrTypeMapperGroupName();
         //添加类型
         addButton.addActionListener(e -> typeMapperModel.addRow(new TypeMapper("demoColumn", "java.lang.Object")));
