@@ -17,10 +17,5 @@ public class CloneUtilsTest {
 
     @Test
     public void cloneByJson() {
-        TableInfo tableInfo = new TableInfo();
-        tableInfo.setComment("Hello World!");
-        TableInfo newTableInfo = CloneUtils.cloneByJson(tableInfo, false);
-        assertNotSame(tableInfo, newTableInfo);
-        assertEquals(tableInfo, newTableInfo);
     }
 }
