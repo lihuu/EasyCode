@@ -1,8 +1,7 @@
 <idea-plugin>
     <id>com.sjhy.plugin.easycode</id>
     <name>Easy Code</name>
-    <vendor email="1353036300@qq.com" url="http://www.shujuhaiyang.com">Easy Code Office Website</vendor>
-
+    <vendor email="1449488533qq@gmail.com" url="http://www.shujuhaiyang.com">Easy Code Office Website</vendor>
     <description><![CDATA[
       <tag>EasyCode,Easy Code,easy,code,code generate,code tools</tag>
       <h3>English:</h3>
@@ -29,7 +28,7 @@
     ]]></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="171.3780.107"/>
+    <idea-version since-build="223.8836.41"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->

@@ -7,6 +7,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 plugins {
     java
     id("org.jetbrains.intellij") version "1.13.3"
+//    id("org.jetbrains.idea.maven") version "1.13.3"
 }
 
 group = properties("pluginGroup")
@@ -16,6 +17,12 @@ repositories {
     mavenCentral()
 }
 
+if (hasProperty("buildScan")) {
+    extensions.findByName("buildScan")?.withGroovyBuilder {
+        setProperty("termsOfServiceUrl", "https://gradle.com/terms-of-service")
+        setProperty("termsOfServiceAgree", "yes")
+    }
+}
 
 intellij {
 //    插件名称
@@ -36,7 +43,7 @@ intellij {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
     compileOnly("org.projectlombok:lombok:1.18.24")
     annotationProcessor("org.projectlombok:lombok:1.18.22")
     testImplementation("junit:junit:4.13.2")
@@ -61,3 +68,7 @@ tasks{
         gradleVersion = properties("gradleVersion")
     }
 }
+
+//gradle accept termsOfServiceUrl in build.gradle.kts
+//https://stackoverflow.com/questions/67600010/gradle-accept-termsofserviceurl-in-build-gradle-kts
+

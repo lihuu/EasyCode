@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="3" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="479" height="440"/>
+      <xy x="20" y="20" width="486" height="440"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -49,13 +49,13 @@
           <component id="450d2" class="javax.swing.JButton" binding="copyGroupButton">
             <constraints/>
             <properties>
-              <icon value="actions/copy.png"/>
+              <text value="复制"/>
             </properties>
           </component>
           <component id="d1404" class="javax.swing.JButton" binding="deleteGroupButton">
             <constraints/>
             <properties>
-              <icon value="actions/cancel.png"/>
+              <text value="删除"/>
             </properties>
           </component>
         </children>
@@ -76,13 +76,13 @@
           <component id="cbe8d" class="javax.swing.JButton" binding="addItemButton">
             <constraints/>
             <properties>
-              <icon value="general/add.png"/>
+              <text value="添加"/>
             </properties>
           </component>
           <component id="56e42" class="javax.swing.JButton" binding="deleteItemButton">
             <constraints/>
             <properties>
-              <icon value="actions/cancel.png"/>
+              <text value="删除"/>
             </properties>
           </component>
         </children>
