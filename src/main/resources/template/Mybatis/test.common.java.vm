@@ -1,0 +1,29 @@
+##测试方法生成代码片段
+/**
+ * @see $!{methodInfo.containingClassName}#$!{methodInfo.methodName}($!{parameters})
+ */
+@Test
+@SneakyThrows
+public void test$!tool.firstUpperCase($!{methodInfo.methodName})(){
+    #if($methodInfo.classInfo.name.contains("Controller"))
+        #if($methodAnnotationMap.get("GetMapping")&&$classAnnotationMap.get("RequestMapping"))
+            #set($methodRequestMapping=$methodAnnotationMap.get("GetMapping").get("value"))
+            #set($classRequestMapping=$classAnnotationMap.get("RequestMapping").get("value"))
+            #set($requestMethod="get")
+        #elseif($methodAnnotationMap.get("PostMapping")&&$classAnnotationMap.get("RequestMapping"))
+            #set($methodRequestMapping=$methodAnnotationMap.get("PostMapping").get("value"))
+            #set($classRequestMapping=$classAnnotationMap.get("RequestMapping").get("value"))
+            #set($requestMethod="post")
+        #elseif($methodAnnotationMap.get("DeleteMapping")&&$classAnnotationMap.get("RequestMapping"))
+            #set($methodRequestMapping=$methodAnnotationMap.get("DeleteMapping").get("value"))
+            #set($classRequestMapping=$classAnnotationMap.get("RequestMapping").get("value"))
+            #set($requestMethod="delete")
+        #end
+        #set($url=$classRequestMapping+$methodRequestMapping)
+        mockMvc.perform($requestMethod("$url")
+        .contentType("application/json;charset=utf8"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("code").value(ApiCodeConstants.SUCCESS_CODE))
+        .andDo(printResult());
+    #end
+    }

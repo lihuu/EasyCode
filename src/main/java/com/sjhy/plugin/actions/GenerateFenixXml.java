@@ -41,22 +41,21 @@ public class GenerateFenixXml extends AnAction {
     private void generateFenixFile(Project project, PsiJavaFile psiJavaFile, String templateName) {
         String classFileName = psiJavaFile.getName();
         ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
-        TemplateGroup templateGroup = Settings.getInstance().getTemplateGroupMap().get("Fenix");
-        Template template = getTemplate(templateGroup, templateName);
+        Template template = getTemplate(project, templateName);
         CodeGenerateService.getInstance(project).generateFenixXml(template, classInfo);
     }
 
     private void generateByMethod(Project project, PsiMethodImpl psiMethod) {
         MethodInfo methodInfo = PsiUtils.toMethodInfo(psiMethod);
-        TemplateGroup templateGroup = Settings.getInstance().getTemplateGroupMap().get("Fenix");
-        Template template = getTemplate(templateGroup, "fenix.method.xml");
         CodeGenerateService instance = CodeGenerateService.getInstance(project);
         try {
+            Template template = getTemplate(project, "fenix.method.xml");
             instance.generateFenixXml(template, methodInfo);
         } catch (TargetTestFileNotFoundException targetTestFileNotFoundException) {
             //可能对应的文件不存在，如果不存在就先创建
-            Template testClassTemplate = getTemplate(templateGroup, "fenix.file.xml");
+            Template testClassTemplate = getTemplate(project, "fenix.file.xml");
             instance.generateFenixXml(testClassTemplate, methodInfo.getClassInfo());
+            Template template = getTemplate(project, "fenix.method.xml");
             instance.generateFenixXml(template, methodInfo);
         }
     }
@@ -68,9 +67,8 @@ public class GenerateFenixXml extends AnAction {
             return;
         }
         //文件创建所有的
+        Template template = getTemplate(project, "fenix.file.xml");
         ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
-        TemplateGroup templateGroup = Settings.getInstance().getTemplateGroupMap().get("Fenix");
-        Template template = getTemplate(templateGroup, "fenix.file.xml");
         CodeGenerateService.getInstance(project).generateFenixXml(template, classInfo);
     }
 

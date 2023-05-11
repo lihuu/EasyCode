@@ -1,11 +1,17 @@
 package com.sjhy.plugin.tool;
 
+import com.intellij.openapi.project.Project;
+import com.sjhy.plugin.config.Settings;
 import com.sjhy.plugin.entity.GlobalConfig;
 import com.sjhy.plugin.entity.Template;
 import com.sjhy.plugin.entity.TemplateGroup;
+import com.sjhy.plugin.model.ProjectSettingModel;
+import com.sjhy.plugin.service.ProjectLevelSettingsService;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 模板工具，主要用于对模板进行预处理
@@ -97,5 +103,15 @@ public final class TemplateUtils {
         return templateGroup.getElementList().stream()
             .filter(t -> templateName.equals(t.getName()))
             .findFirst().orElseThrow(() -> new RuntimeException("模板内容不存在"));
+    }
+
+    public static Template getTemplate(Project project, String templateName) {
+        return getTemplate(getTemplateGroup(project), templateName);
+    }
+
+    private static TemplateGroup getTemplateGroup(Project project) {
+        ProjectLevelSettingsService service = ProjectLevelSettingsService.getInstance(project);
+        String groupName = Objects.requireNonNull(service.getState()).getLastSelectedTemplateGroup();
+        return Settings.getInstance().getTemplateGroupMap().get(groupName);
     }
 }

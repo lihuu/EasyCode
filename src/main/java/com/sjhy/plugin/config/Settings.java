@@ -143,14 +143,41 @@ public class Settings implements PersistentStateComponent<Settings> {
 
     private void loadTemplateGroup() {
         this.templateGroupMap.put(DEFAULT_NAME,
-            loadTemplateGroup(DEFAULT_NAME, "entity.java", "repository.java", "test.repository.java", "service.java", "test.service.java", "serviceImpl.java", "controller.java",
+            loadTemplateGroup(DEFAULT_NAME, 
+                "entity.java", 
+                "repository.java", 
+                "test.repository.java", 
+                "service.java", 
+                "test.service.java", 
+                "serviceImpl.java", 
+                "controller.java",
                 "test.controller.java",
-                "debug.json", "test.common.java"));
+                "debug.json", 
+                "test.common.java",
+                "test.method.java",
+                "fenix.file.xml",
+                "fenix.method.xml"
+            ));
+
+        this.templateGroupMap.put("Jpa",
+            loadTemplateGroup("Jpa", 
+                "entity.java", 
+                "repository.java", 
+                "test.repository.java", 
+                "service.java", 
+                "test.service.java", 
+                "serviceImpl.java", 
+                "controller.java",
+                "test.controller.java",
+                "debug.json", 
+                "test.common.java",
+                "test.method.java",
+                "fenix.file.xml",
+                "fenix.method.xml"
+            ));
         this.templateGroupMap.put("Mybatis",
-            loadTemplateGroup("Mybatis", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java", "mapper.xml", "debug.json"));
-        this.templateGroupMap.put("MybatisPlus", loadTemplateGroup("MybatisPlus", "entity", "dao", "service", "serviceImpl", "controller"));
-        this.templateGroupMap.put("Test", loadTemplateGroup("Test", "test.common", "test.method"));
-        this.templateGroupMap.put("Fenix", loadTemplateGroup("Fenix", "fenix.file.xml", "fenix.method.xml"));
+            loadTemplateGroup("Mybatis", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java", "mapper.xml", "debug.json","test.common.java","test.method.java"));
+        this.templateGroupMap.put("MybatisPlus", loadTemplateGroup("MybatisPlus", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java"));
     }
 
     @NotNull

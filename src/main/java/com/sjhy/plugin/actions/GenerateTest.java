@@ -6,8 +6,9 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.sjhy.plugin.comm.TargetTestFileNotFoundException;
-import com.sjhy.plugin.config.Settings;
-import com.sjhy.plugin.entity.*;
+import com.sjhy.plugin.entity.ClassInfo;
+import com.sjhy.plugin.entity.MethodInfo;
+import com.sjhy.plugin.entity.Template;
 import com.sjhy.plugin.service.CodeGenerateService;
 import com.sjhy.plugin.tool.PsiUtils;
 import com.sjhy.plugin.tool.TemplateUtils;
@@ -39,22 +40,21 @@ public class GenerateTest extends AnAction {
     private static void generateTestFile(Project project, PsiJavaFile psiJavaFile) {
         String classFileName = psiJavaFile.getName();
         ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
-        TemplateGroup templateGroup = Settings.getInstance().getTemplateGroupMap().get("Test");
-        Template template = TemplateUtils.getTemplate(templateGroup, "test.common");
+        Template template = TemplateUtils.getTemplate(project, "test.common.java");
         CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
     }
 
     private static void generateTestMethod(Project project, PsiMethod psiMethod) {
         MethodInfo methodInfo = PsiUtils.toMethodInfo(psiMethod);
-        TemplateGroup templateGroup = Settings.getInstance().getTemplateGroupMap().get("Test");
-        Template template = TemplateUtils.getTemplate(templateGroup, "test.method");
         CodeGenerateService instance = CodeGenerateService.getInstance(project);
         try {
+            Template template = TemplateUtils.getTemplate(project, "test.method.java");
             instance.generateTestCode(template, methodInfo);
         } catch (TargetTestFileNotFoundException targetTestFileNotFoundException) {
             //可能对应的文件不存在，如果不存在就先创建
-            Template testClassTemplate = TemplateUtils.getTemplate(templateGroup, "test.common");
+            Template testClassTemplate = TemplateUtils.getTemplate(project, "test.common.java");
             instance.generateTestCode(testClassTemplate, methodInfo.getClassInfo());
+            Template template = TemplateUtils.getTemplate(project, "test.method.java");
             instance.generateTestCode(template, methodInfo);
         }
     }
@@ -67,8 +67,7 @@ public class GenerateTest extends AnAction {
         }
         //文件创建所有的
         ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
-        TemplateGroup templateGroup = Settings.getInstance().getTemplateGroupMap().get("Test");
-        Template template = TemplateUtils.getTemplate(templateGroup, "test.common");
+        Template template = TemplateUtils.getTemplate(project, "test.common.java");
         CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
     }
 

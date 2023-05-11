@@ -1,0 +1,27 @@
+##定义初始变量
+#set($repositoryName = $tool.append($tableInfo.name, "Repository"))
+#set($entityName = $tableInfo.name)
+##设置回调
+$!callback.setFileName($tool.append($repositoryName, ".java"))
+$!callback.setSavePath($tool.append($tableInfo.savePath, "/repository"))
+
+##拿到主键
+#if(!$tableInfo.primaryKeyProperties.isEmpty())
+    #set($pk = $tableInfo.primaryKeyProperties.get(0))
+#end
+
+#if($tableInfo.savePackageName)package $!{tableInfo.savePackageName}.#{end}repository;
+
+import $!{tableInfo.savePackageName}.entity.$!{tableInfo.name};
+import org.apache.ibatis.annotations.Param;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+/**
+ *
+ * @author $!author
+ * @since $!time.currTime()
+ */
+public interface $!{repositoryName} extends JpaRepository<$!{entityName},$!{pk.shortType}>{
+}

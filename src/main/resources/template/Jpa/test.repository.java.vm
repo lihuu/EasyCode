@@ -27,4 +27,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 public class  $!{tableName}Test {
     @Autowired
     private $!testTargetName $!tool.firstLowerCase($!{testTargetName});
+
+    @org.junit.Test
+    public void test() {
+    }
 }

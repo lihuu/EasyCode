@@ -17,6 +17,10 @@ public class StringUtils {
     public static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.length() == 0;
     }
+    
+    public static boolean isNotEmpty(final CharSequence charSequence){
+        return !isEmpty(charSequence);
+    }
 
     /**
      * 首字母大写方法

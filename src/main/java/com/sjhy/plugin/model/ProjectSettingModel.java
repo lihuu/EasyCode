@@ -1,5 +1,6 @@
 package com.sjhy.plugin.model;
 
+import com.sjhy.plugin.config.Settings;
 import com.sjhy.plugin.tool.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,10 +39,14 @@ public class ProjectSettingModel {
     private String lastSelectedTemplateGroup;
 
     public String getLastSelectedTemplateGroup() {
-        if (StringUtils.isEmpty(lastSelectedTemplateGroup)) {
+        if (StringUtils.isNotEmpty(lastSelectedTemplateGroup)) {
+            return lastSelectedTemplateGroup;
+        }
+        String templateGroupName = Settings.getInstance().getCurrTemplateGroupName();
+        if (StringUtils.isEmpty(templateGroupName)) {
             return "Default";
         } else {
-            return lastSelectedTemplateGroup;
+            return templateGroupName;
         }
     }
 
