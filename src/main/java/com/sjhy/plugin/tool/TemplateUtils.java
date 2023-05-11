@@ -2,6 +2,7 @@ package com.sjhy.plugin.tool;
 
 import com.sjhy.plugin.entity.GlobalConfig;
 import com.sjhy.plugin.entity.Template;
+import com.sjhy.plugin.entity.TemplateGroup;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -90,5 +91,11 @@ public final class TemplateUtils {
         if (template != null) {
             addGlobalConfig(Collections.singleton(template));
         }
+    }
+
+    public static Template getTemplate(TemplateGroup templateGroup, String templateName) {
+        return templateGroup.getElementList().stream()
+            .filter(t -> templateName.equals(t.getName()))
+            .findFirst().orElseThrow(() -> new RuntimeException("模板内容不存在"));
     }
 }
