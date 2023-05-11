@@ -196,6 +196,7 @@ public class SaveFile {
             editedFile = saveOrReplaceFile(psiFile, directory);
         }
         if (editedFile != null) {
+            FileUtils.getInstance().reformatFile(project, editedFile);
             FileEditorManager.getInstance(project).openFile(editedFile, true);
         }
     }
