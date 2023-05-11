@@ -26,4 +26,4 @@ public void test$!tool.firstUpperCase($!{methodInfo.methodName})(){
         .andExpect(jsonPath("code").value(ApiCodeConstants.SUCCESS_CODE))
         .andDo(printResult());
     #end
-    }
+}
