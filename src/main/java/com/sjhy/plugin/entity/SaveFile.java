@@ -232,7 +232,7 @@ public class SaveFile {
         if (file == null) {
             file = fileUtils.createChildFile(project, directory, this.fileName);
             if (file == null) {
-                return file;
+                return null;
             }
             document = coverFile(file);
         } else {

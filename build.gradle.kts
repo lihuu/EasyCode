@@ -43,11 +43,11 @@ intellij {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
-    compileOnly("org.projectlombok:lombok:1.18.24")
-    annotationProcessor("org.projectlombok:lombok:1.18.22")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
+    compileOnly("org.projectlombok:lombok:1.18.34")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
     testImplementation("junit:junit:4.13.2")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.22")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 }
 
 
@@ -68,6 +68,7 @@ tasks{
         gradleVersion = properties("gradleVersion")
     }
 }
+
 
 //gradle accept termsOfServiceUrl in build.gradle.kts
 //https://stackoverflow.com/questions/67600010/gradle-accept-termsofserviceurl-in-build-gradle-kts

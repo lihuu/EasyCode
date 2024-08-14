@@ -100,10 +100,13 @@ public final class ModuleUtils {
 
     public static String getModulePath(PsiElement psiElement) {
         Module module = getModule(psiElement);
+        if (module == null) {
+            return psiElement.getProject().getBasePath();
+        }
         return getModulePath(module);
     }
 
-    public static @NotNull String getModulePath(Module module) {
+    private static @NotNull String getModulePath(Module module) {
         return ModuleUtil.getModuleDirPath(module);
     }
 
