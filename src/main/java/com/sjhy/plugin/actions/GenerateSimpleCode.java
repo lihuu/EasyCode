@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.sjhy.plugin.entity.ClassInfo;
 import com.sjhy.plugin.entity.PropertyInfo;
+import com.sjhy.plugin.tool.ModuleUtils;
 import com.sjhy.plugin.ui.CodeGenerateForm;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,7 @@ public class GenerateSimpleCode extends AnAction {
             return;
         }
         String classFileName = psiJavaFile.getName();
-        ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
+        ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), ModuleUtils.getModulePath(psiJavaFile), psiJavaFile.getPackageName());
         Stream<PsiField> psiFieldStream = Arrays.stream(psiJavaFile.getClasses()[0].getAllFields());
         List<PsiField> allFields = psiFieldStream.collect(Collectors.toList());
         List<PsiField> psiFieldList = allFields.stream().filter(f -> f.hasAnnotation("javax.persistence.Id")).collect(Collectors.toList());

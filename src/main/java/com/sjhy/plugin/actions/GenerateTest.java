@@ -11,6 +11,7 @@ import com.sjhy.plugin.comm.TargetTestFileNotFoundException;
 import com.sjhy.plugin.config.Settings;
 import com.sjhy.plugin.entity.*;
 import com.sjhy.plugin.service.CodeGenerateService;
+import com.sjhy.plugin.tool.ModuleUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -28,11 +29,13 @@ public class GenerateTest extends AnAction {
         if (project == null) {
             return;
         }
+
         PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
         if (psiElement instanceof PsiMethodImpl) {
             generateTestMethod(project, (PsiMethodImpl)psiElement);
         } else if (psiElement instanceof PsiClass) {
-            generateTestClass(project, (PsiClass)psiElement);
+            PsiClass psiClass = (PsiClass)psiElement;
+            generateTestClass(project, psiClass);
         } else {
             PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
             if (psiFile instanceof PsiJavaFile) {
@@ -43,7 +46,7 @@ public class GenerateTest extends AnAction {
 
     private void generateTestFile(Project project, PsiJavaFile psiJavaFile) {
         String classFileName = psiJavaFile.getName();
-        ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
+        ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), ModuleUtils.getModulePath(psiJavaFile), psiJavaFile.getPackageName());
         Template template = getTemplate("test.common");
         CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
     }
@@ -64,7 +67,7 @@ public class GenerateTest extends AnAction {
             containingClassName = "";
             qualifiedName = "";
         }
-        ClassInfo classInfo = new ClassInfo(containingClassName, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
+        ClassInfo classInfo = new ClassInfo(containingClassName, ModuleUtils.getModulePath(psiMethod), qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
         classInfo.setOpenFile(false);
         classInfo.setAnnotationInfoList(buildAnnotationInfoList(containingClass.getAnnotations()));
         MethodInfo methodInfo = MethodInfo.builder()
@@ -113,7 +116,7 @@ public class GenerateTest extends AnAction {
             return;
         }
         //文件创建所有的
-        ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
+        ClassInfo classInfo = new ClassInfo(name, ModuleUtils.getModulePath(psiClass), qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
         Template template = getTemplate("test.common");
         CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
     }

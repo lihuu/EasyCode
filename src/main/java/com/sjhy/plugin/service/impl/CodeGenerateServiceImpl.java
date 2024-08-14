@@ -11,6 +11,9 @@ import com.sjhy.plugin.service.CodeGenerateService;
 import com.sjhy.plugin.service.ProjectLevelSettingsService;
 import com.sjhy.plugin.tool.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.SystemIndependent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -178,23 +181,18 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, false, classInfo.isOpenFile()).write();
     }
 
-    private String getDefaultTestSrcSavePath(Project project) {
+    private String getDefaultTestSrcSavePath(ProjectLevelSettingsService projectLevelSettingsService, @Nullable @SystemIndependent @NonNls String basePath) {
         //设置默认的保存的目录
         //TODO 如果是多个模块的，默认取第一个
-        ProjectLevelSettingsService projectLevelSettingsService = ProjectLevelSettingsService.getInstance(project);
         ProjectSettingModel state = projectLevelSettingsService.getState();
         String baseSavePath;
         if (state != null && !StringUtils.isEmpty(state.getBaseTestSrcPath())) {
             baseSavePath = state.getBaseTestSrcPath();
         } else {
-            baseSavePath = project.getBasePath() + "/src/test/java/";
-            state = new ProjectSettingModel();
-            state.setBaseTestSrcPath(baseSavePath);
-            projectLevelSettingsService.loadState(state);
+            baseSavePath = basePath + "/src/test/java/";
         }
         return baseSavePath;
     }
-
 
     private String getDefaultFenixXmlSavePath(Project project) {
         //设置默认的保存的目录
@@ -206,7 +204,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         } else {
             baseSavePath = project.getBasePath() + "/src/main/resources/";
             state = new ProjectSettingModel();
-            state.setBaseTestSrcPath(baseSavePath);
+            state.setBaseFenixPath(baseSavePath);
             projectLevelSettingsService.loadState(state);
         }
         return baseSavePath;
@@ -246,7 +244,9 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
     @Override
     public void generateTestCode(Template template, MethodInfo methodInfo) {
-        String defaultSavePath = getDefaultTestSrcSavePath(project) + methodInfo.getClassInfo().getPackageName().replace(".", "/");
+        String modulePath = methodInfo.getClassInfo().getModulePath();
+        String defaultSavePath =
+            getDefaultTestSrcSavePath(ProjectLevelSettingsService.getInstance(project), modulePath) + methodInfo.getClassInfo().getPackageName().replace(".", "/");
         generateCodeByMethodInfo(template, methodInfo, defaultSavePath);
     }
 
@@ -267,7 +267,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
     @Override
     public void generateTestCode(Template template, ClassInfo classInfo) {
-        String defaultSavePath = getDefaultTestSrcSavePath(project) + classInfo.getPackageName().replace(".", "/");
+        String modulePath = classInfo.getModulePath();
+        String defaultSavePath = getDefaultTestSrcSavePath(ProjectLevelSettingsService.getInstance(project), modulePath) + classInfo.getPackageName().replace(".", "/");
         generateCodeByClassInfo(template, classInfo, defaultSavePath);
     }
 

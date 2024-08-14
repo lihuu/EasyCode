@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.psi.PsiElement;
 import com.sjhy.plugin.constants.MsgValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.JavaSourceRootType;
@@ -92,4 +93,18 @@ public final class ModuleUtils {
     public static boolean existsSourcePath(Module module) {
         return !CollectionUtil.isEmpty(ModuleRootManager.getInstance(module).getSourceRoots(JavaSourceRootType.SOURCE));
     }
+
+    public static Module getModule(PsiElement psiMethod) {
+        return ModuleUtil.findModuleForFile(psiMethod.getContainingFile());
+    }
+
+    public static String getModulePath(PsiElement psiElement) {
+        Module module = getModule(psiElement);
+        return getModulePath(module);
+    }
+
+    public static @NotNull String getModulePath(Module module) {
+        return ModuleUtil.getModuleDirPath(module);
+    }
+
 }
