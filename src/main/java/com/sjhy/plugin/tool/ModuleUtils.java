@@ -107,7 +107,11 @@ public final class ModuleUtils {
     }
 
     private static @NotNull String getModulePath(Module module) {
-        return ModuleUtil.getModuleDirPath(module);
+        String moduleDirPath = ModuleUtil.getModuleDirPath(module);
+        if (moduleDirPath.contains(".idea/modules")) {
+            return moduleDirPath.replace(".idea/modules/", "");
+        }
+        return moduleDirPath;
     }
 
 }

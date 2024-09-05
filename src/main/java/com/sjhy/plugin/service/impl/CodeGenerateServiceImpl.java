@@ -183,10 +183,9 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
     private String getDefaultTestSrcSavePath(ProjectLevelSettingsService projectLevelSettingsService, @Nullable @SystemIndependent @NonNls String basePath) {
         //设置默认的保存的目录
-        //TODO 如果是多个模块的，默认取第一个
         ProjectSettingModel state = projectLevelSettingsService.getState();
         String baseSavePath;
-        if (state != null && !StringUtils.isEmpty(state.getBaseTestSrcPath())) {
+        if (state != null && StringUtils.isNotEmpty(state.getBaseTestSrcPath())) {
             baseSavePath = state.getBaseTestSrcPath();
         } else {
             baseSavePath = basePath + "/src/test/java/";

@@ -15,7 +15,7 @@ public class StringUtils {
      * @return 是否为空
      */
     public static boolean isEmpty(final CharSequence cs) {
-        return cs == null || cs.length() == 0;
+        return cs == null || cs.isEmpty();
     }
 
     /**
@@ -80,5 +80,9 @@ public class StringUtils {
             inOffset += Character.charCount(codepoint);
         }
         return new String(newCodePoints, 0, outOffset);
+    }
+
+    public static boolean isNotEmpty(String str) {
+        return !isEmpty(str);
     }
 }
