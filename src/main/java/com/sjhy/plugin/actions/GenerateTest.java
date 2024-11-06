@@ -33,8 +33,7 @@ public class GenerateTest extends AnAction {
         PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
         if (psiElement instanceof PsiMethodImpl) {
             generateTestMethod(project, (PsiMethodImpl)psiElement);
-        } else if (psiElement instanceof PsiClass) {
-            PsiClass psiClass = (PsiClass)psiElement;
+        } else if (psiElement instanceof PsiClass psiClass) {
             generateTestClass(project, psiClass);
         } else {
             PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);

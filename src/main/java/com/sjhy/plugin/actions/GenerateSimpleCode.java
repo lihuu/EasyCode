@@ -40,8 +40,8 @@ public class GenerateSimpleCode extends AnAction {
         String classFileName = psiJavaFile.getName();
         ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), ModuleUtils.getModulePath(psiJavaFile), psiJavaFile.getPackageName());
         Stream<PsiField> psiFieldStream = Arrays.stream(psiJavaFile.getClasses()[0].getAllFields());
-        List<PsiField> allFields = psiFieldStream.collect(Collectors.toList());
-        List<PsiField> psiFieldList = allFields.stream().filter(f -> f.hasAnnotation("javax.persistence.Id")).collect(Collectors.toList());
+        List<PsiField> allFields = psiFieldStream.toList();
+        List<PsiField> psiFieldList = allFields.stream().filter(f -> f.hasAnnotation("javax.persistence.Id")).toList();
         if (!psiFieldList.isEmpty()) {
             classInfo.setPrimaryKeyProperties(psiFieldList.stream().map(GenerateSimpleCode::toPropertyInfo).collect(Collectors.toList()));
         }
