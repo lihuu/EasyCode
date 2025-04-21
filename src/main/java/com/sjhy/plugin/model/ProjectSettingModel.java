@@ -4,6 +4,8 @@ import com.sjhy.plugin.tool.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 /**
  * @author lihu@eventslack.com
  * @since 2021/9/22
@@ -36,6 +38,8 @@ public class ProjectSettingModel {
      * 上次选择的模板组
      */
     private String lastSelectedTemplateGroup;
+
+    private Map<String, String> moduleTestSrcMap;
 
     public String getLastSelectedTemplateGroup() {
         if (StringUtils.isEmpty(lastSelectedTemplateGroup)) {

@@ -9,6 +9,8 @@ import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+
 /**
  * @author lihu <1449488533qq@gmail.com>
  * @since 2021/9/21
@@ -21,6 +23,10 @@ public class ProjectLevelSettingsServiceImpl implements ProjectLevelSettingsServ
     public ProjectLevelSettingsServiceImpl() {
         projectSettingModel.setBaseSrcPath("");
         projectSettingModel.setBaseTestSrcPath("");
+        projectSettingModel.setBaseFenixPath("");
+        HashMap<String, String> moduleTestSrcMap = new HashMap<>();
+        moduleTestSrcMap.put("default", "");
+        projectSettingModel.setModuleTestSrcMap(moduleTestSrcMap);
     }
 
 

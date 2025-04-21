@@ -41,13 +41,13 @@ public final class ModuleUtils {
         modulePath = modulePath.replace("\\", "/");
         // 尝试消除不正确的路径
         if (modulePath.contains(".idea/modules/")) {
-            modulePath = modulePath.replace(".idea/modules/","");
+            modulePath = modulePath.replace(".idea/modules/", "");
         }
         if (modulePath.contains(".idea/modules")) {
-            modulePath = modulePath.replace(".idea/modules","");
+            modulePath = modulePath.replace(".idea/modules", "");
         }
         if (modulePath.contains("/.idea")) {
-            modulePath = modulePath.replace("/.idea","");
+            modulePath = modulePath.replace("/.idea", "");
         }
         VirtualFile dir = VirtualFileManager.getInstance().findFileByUrl(String.format("file://%s", modulePath));
         if (dir == null) {
@@ -104,6 +104,14 @@ public final class ModuleUtils {
             return psiElement.getProject().getBasePath();
         }
         return getModulePath(module);
+    }
+
+    public static String getModuleName(PsiElement psiElement) {
+        Module module = getModule(psiElement);
+        if (module == null) {
+            return "";
+        }
+        return module.getName();
     }
 
     private static @NotNull String getModulePath(Module module) {

@@ -45,7 +45,11 @@ public class GenerateTest extends AnAction {
 
     private void generateTestFile(Project project, PsiJavaFile psiJavaFile) {
         String classFileName = psiJavaFile.getName();
-        ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), ModuleUtils.getModulePath(psiJavaFile), psiJavaFile.getPackageName());
+        String modulePath = ModuleUtils.getModulePath(psiJavaFile);
+        String moduleName = ModuleUtils.getModuleName(psiJavaFile);
+        String name = classFileName.substring(0, classFileName.indexOf("."));
+        String packageName = psiJavaFile.getPackageName();
+        ClassInfo classInfo = new ClassInfo(name, modulePath, packageName, moduleName);
         Template template = getTemplate("test.common");
         CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
     }
@@ -66,7 +70,10 @@ public class GenerateTest extends AnAction {
             containingClassName = "";
             qualifiedName = "";
         }
-        ClassInfo classInfo = new ClassInfo(containingClassName, ModuleUtils.getModulePath(psiMethod), qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
+        String modulePath = ModuleUtils.getModulePath(psiMethod);
+        String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
+        String moduleName = ModuleUtils.getModuleName(psiMethod);
+        ClassInfo classInfo = new ClassInfo(containingClassName, modulePath, packageName, moduleName);
         classInfo.setOpenFile(false);
         classInfo.setAnnotationInfoList(buildAnnotationInfoList(containingClass.getAnnotations()));
         MethodInfo methodInfo = MethodInfo.builder()
@@ -103,7 +110,7 @@ public class GenerateTest extends AnAction {
     private Function<PsiParameter, PropertyInfo> toProperInfo() {
         return psiParameter -> PropertyInfo.builder()
             .name(psiParameter.getName())
-            .type(psiParameter.getType().getCanonicalText()) 
+            .type(psiParameter.getType().getCanonicalText())
             .shortType(psiParameter.getType().getPresentableText())
             .build();
     }
@@ -115,7 +122,10 @@ public class GenerateTest extends AnAction {
             return;
         }
         //文件创建所有的
-        ClassInfo classInfo = new ClassInfo(name, ModuleUtils.getModulePath(psiClass), qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
+        String modulePath = ModuleUtils.getModulePath(psiClass);
+        String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
+        String moduleName = ModuleUtils.getModuleName(psiClass);
+        ClassInfo classInfo = new ClassInfo(name, modulePath, packageName, moduleName);
         Template template = getTemplate("test.common");
         CodeGenerateService.getInstance(project).generateTestCode(template, classInfo);
     }

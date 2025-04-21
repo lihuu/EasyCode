@@ -19,6 +19,7 @@ public class ClassInfo extends EntityClassInfo {
     private List<AnnotationInfo> annotationInfoList;
     private boolean openFile = true;
     private String modulePath;
+    private String moduleName;
 
     public ClassInfo(String name, String packageName) {
         this.name = name;
@@ -29,6 +30,13 @@ public class ClassInfo extends EntityClassInfo {
         this.name = name;
         this.modulePath = modulePath;
         this.packageName = packageName;
+    }
+
+    public ClassInfo(String name,String modulePath,String packageName,String moduleName){
+        this.name = name;
+        this.modulePath = modulePath;
+        this.packageName = packageName;
+        this.moduleName = moduleName;
     }
 
     @Override

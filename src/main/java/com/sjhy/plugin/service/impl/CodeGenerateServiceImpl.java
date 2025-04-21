@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
  * @since 2018/09/02 12:50
  */
 public class CodeGenerateServiceImpl implements CodeGenerateService {
+    public static final String SRC_TEST_JAVA = "/src/test/java/";
+    public static final String DEFAULT = "default";
     /**
      * 项目对象
      */
@@ -181,16 +183,28 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         new SaveFile(project, path, callback.getFileName(), code, callback.isReformat(), false, false, classInfo.isOpenFile()).write();
     }
 
-    private String getDefaultTestSrcSavePath(ProjectLevelSettingsService projectLevelSettingsService, @Nullable @SystemIndependent @NonNls String basePath) {
+    private String getTestSrcPath(@Nullable @SystemIndependent @NonNls String basePath, ProjectSettingModel state, String moduleName) {
         //设置默认的保存的目录
-        ProjectSettingModel state = projectLevelSettingsService.getState();
-        String baseSavePath;
-        if (state != null && StringUtils.isNotEmpty(state.getBaseTestSrcPath())) {
-            baseSavePath = state.getBaseTestSrcPath();
-        } else {
-            baseSavePath = basePath + "/src/test/java/";
+        if (state == null) {
+            return basePath + SRC_TEST_JAVA;
         }
-        return baseSavePath;
+        Map<String, String> moduleTestSrcMap = state.getModuleTestSrcMap();
+        String testSrcPath = moduleTestSrcMap.get(moduleName);
+        if (StringUtils.isNotEmpty(testSrcPath)) {
+            return testSrcPath;
+        }
+
+        String defaultTestSrcPath = moduleTestSrcMap.get(DEFAULT);
+
+        if (StringUtils.isNotEmpty(defaultTestSrcPath)) {
+            return defaultTestSrcPath;
+        }
+
+        if (StringUtils.isNotEmpty(state.getBaseTestSrcPath())) {
+            return state.getBaseTestSrcPath();
+        }
+
+        return basePath + SRC_TEST_JAVA;
     }
 
     private String getDefaultFenixXmlSavePath(Project project) {
@@ -208,7 +222,6 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         }
         return baseSavePath;
     }
-
 
     /**
      * 生成代码
@@ -243,31 +256,33 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
     @Override
     public void generateTestCode(Template template, MethodInfo methodInfo) {
-        String modulePath = methodInfo.getClassInfo().getModulePath();
-        String defaultSavePath =
-            getDefaultTestSrcSavePath(ProjectLevelSettingsService.getInstance(project), modulePath) + methodInfo.getClassInfo().getPackageName().replace(".", "/");
+        ClassInfo classInfo = methodInfo.getClassInfo();
+        String modulePath = classInfo.getModulePath();
+        ProjectLevelSettingsService instance = ProjectLevelSettingsService.getInstance(project);
+        String defaultSavePath = getTestSrcPath(modulePath, instance.getState(), classInfo.getModuleName()) + classInfo.getPackageName().replace(".", "/");
         generateCodeByMethodInfo(template, methodInfo, defaultSavePath);
     }
-
 
     private Map<String, Map<String, Object>> toAnnotationMap(List<AnnotationInfo> annotationInfos) {
         if (CollectionUtils.isEmpty(annotationInfos)) {
             return Collections.emptyMap();
         }
-        return annotationInfos.stream().collect(Collectors.toMap(annotationInfo -> this.annotationSimpleName(annotationInfo.getName()), AnnotationInfo::getAnnotationValues, (v1, v2) -> {
-            v1.putAll(v2);
-            return v1;
-        }));
+        return annotationInfos.stream()
+            .collect(Collectors.toMap(annotationInfo -> this.annotationSimpleName(annotationInfo.getName()), AnnotationInfo::getAnnotationValues, (v1, v2) -> {
+                v1.putAll(v2);
+                return v1;
+            }));
     }
 
     private String annotationSimpleName(String name) {
-        return name.substring(name.lastIndexOf(".")+1);
+        return name.substring(name.lastIndexOf(".") + 1);
     }
 
     @Override
     public void generateTestCode(Template template, ClassInfo classInfo) {
         String modulePath = classInfo.getModulePath();
-        String defaultSavePath = getDefaultTestSrcSavePath(ProjectLevelSettingsService.getInstance(project), modulePath) + classInfo.getPackageName().replace(".", "/");
+        ProjectSettingModel state = ProjectLevelSettingsService.getInstance(project).getState();
+        String defaultSavePath = getTestSrcPath(modulePath, state, classInfo.getModuleName()) + classInfo.getPackageName().replace(".", "/");
         generateCodeByClassInfo(template, classInfo, defaultSavePath);
     }
 
@@ -345,7 +360,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
     private void generateCodeByMethodInfo(Template template, MethodInfo methodInfo, String defaultSavePath) {
         Map<String, Object> param = getDefaultParam();
         param.put("methodInfo", methodInfo);
-        param.put("classInfo",methodInfo.getClassInfo());
+        param.put("classInfo", methodInfo.getClassInfo());
         param.put("methodAnnotationMap", toAnnotationMap(methodInfo.getAnnotationInfos()));
         param.put("classAnnotationMap", toAnnotationMap(methodInfo.getClassInfo().getAnnotationInfoList()));
         String parameters = methodInfo.getMethodParameters().stream().map(PropertyInfo::getType).collect(Collectors.joining(","));

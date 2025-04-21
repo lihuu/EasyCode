@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.intellijPlatform
+
 fun properties(key: String) = project.findProperty(key).toString()
 
 //2.1 插件配置
@@ -6,8 +8,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // 第三方的组件使用全名 
 plugins {
     java
-    id("org.jetbrains.intellij") version "1.13.3"
-//    id("org.jetbrains.idea.maven") version "1.13.3"
+    id("org.jetbrains.intellij.platform") version "2.5.0"
 }
 
 group = properties("pluginGroup")
@@ -15,6 +16,9 @@ version = properties("pluginVersion")
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 if (hasProperty("buildScan")) {
@@ -24,25 +28,37 @@ if (hasProperty("buildScan")) {
     }
 }
 
-intellij {
-//    插件名称
-    pluginName.set(properties("pluginName"))
-    // 沙箱目录位置，用于保存IDEA的设置，默认在build文件下面，防止clean，放在根目录下。
-    sandboxDir.set("${rootProject.rootDir}/idea-sandbox")
-    // 开发环境运行时使用的版本
-    version.set("2023.1")
-    type.set("IU")
-    // 各种版本去这里找
-    // https://www.jetbrains.com/intellij-repository/releases
-    // 依赖的插件
-    plugins.set(listOf("java"))
-    updateSinceUntilBuild.set(false)
-    //Disables updating since-build attribute in plugin.xml
-    //updateSinceUntilBuild = false
-    //downloadSources = true
+//intellij {
+////    插件名称
+//    pluginName.set(properties("pluginName"))
+//    // 沙箱目录位置，用于保存IDEA的设置，默认在build文件下面，防止clean，放在根目录下。
+//    sandboxDir.set("${rootProject.rootDir}/idea-sandbox")
+//    // 开发环境运行时使用的版本
+//    version.set("2023.1")
+//    type.set("IU")
+//    // 各种版本去这里找
+//    // https://www.jetbrains.com/intellij-repository/releases
+//    // 依赖的插件
+//    plugins.set(listOf("java"))
+//    updateSinceUntilBuild.set(false)
+//    //Disables updating since-build attribute in plugin.xml
+//    //updateSinceUntilBuild = false
+//    //downloadSources = true
+//}
+
+intellijPlatform {
+    projectName = project.name
+    sandboxContainer.set(file("${rootProject.rootDir}/idea-sandbox"))
+    pluginConfiguration{
+        name = properties("pluginName")
+    }
 }
 
 dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2023.3")
+        bundledPlugin("com.intellij.java")
+    }
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
@@ -66,6 +82,13 @@ tasks{
     
     wrapper{
         gradleVersion = properties("gradleVersion")
+    }
+}
+
+
+tasks.withType<Wrapper> {
+    doFirst {
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2,TLSv1.3")
     }
 }
 
