@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.intellijPlatform
-
 fun properties(key: String) = project.findProperty(key).toString()
 
 //2.1 插件配置
@@ -49,8 +47,13 @@ if (hasProperty("buildScan")) {
 intellijPlatform {
     projectName = project.name
     sandboxContainer.set(file("${rootProject.rootDir}/idea-sandbox"))
-    pluginConfiguration{
+    pluginConfiguration {
         name = properties("pluginName")
+
+        ideaVersion {
+            sinceBuild.set("233")
+            untilBuild.set("253")
+        }
     }
 }
 
@@ -67,20 +70,20 @@ dependencies {
 }
 
 
-tasks{
-    compileJava{
+tasks {
+    compileJava {
         options.encoding = "UTF-8"
         sourceCompatibility = "17"
         targetCompatibility = "17"
     }
-    
-    compileTestJava{
+
+    compileTestJava {
         options.encoding = "UTF-8"
         sourceCompatibility = "17"
         targetCompatibility = "17"
     }
-    
-    wrapper{
+
+    wrapper {
         gradleVersion = properties("gradleVersion")
     }
 }

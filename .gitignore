@@ -19,3 +19,7 @@ idea-sandbox
 .DS_Store
 
 
+/.intellijPlatform/localPlatformArtifacts/IC-233.11799.241/bundledPlugin-com.intellij.java-IC-233.11799.241.xml
+/.intellijPlatform/coroutines-javaagent.lock
+/.intellijPlatform/localPlatformArtifacts/IC-251.23774.435/bundledPlugin-com.intellij.java-IC-251.23774.435.xml
+/.intellijPlatform/self-update.lock
