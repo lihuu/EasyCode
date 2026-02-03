@@ -52,14 +52,14 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild.set("233")
-            untilBuild.set("253")
+            untilBuild.set("253.*")
         }
     }
 }
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2023.3")
+        intellijIdeaCommunity("2024.3")
         bundledPlugin("com.intellij.java")
     }
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
@@ -73,14 +73,14 @@ dependencies {
 tasks {
     compileJava {
         options.encoding = "UTF-8"
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
     }
 
     compileTestJava {
         options.encoding = "UTF-8"
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
     }
 
     wrapper {
