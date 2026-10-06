@@ -8,10 +8,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiMethodImpl;
 import com.sjhy.plugin.comm.TargetTestFileNotFoundException;
-import com.sjhy.plugin.config.Settings;
 import com.sjhy.plugin.entity.*;
+import com.sjhy.plugin.model.ProjectSettingModel;
 import com.sjhy.plugin.service.CodeGenerateService;
+import com.sjhy.plugin.service.ProjectLevelSettingsService;
+import com.sjhy.plugin.tool.TemplateGroupResolver;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -43,8 +46,12 @@ public class GenerateFenixXml extends AnAction {
 
     private void generateFenixFile(Project project, PsiJavaFile psiJavaFile, String templateName) {
         String classFileName = psiJavaFile.getName();
-        ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), psiJavaFile.getPackageName());
-        Template template = getTemplate(templateName);
+        ClassInfo classInfo = new ClassInfo(simpleNameOf(classFileName), psiJavaFile.getPackageName());
+        TemplateGroup templateGroup = resolveTemplateGroup(project, templateName);
+        if (templateGroup == null) {
+            return;
+        }
+        Template template = getRequiredTemplate(templateGroup, templateName);
         CodeGenerateService.getInstance(project).generateFenixXml(template, classInfo);
     }
 
@@ -64,7 +71,7 @@ public class GenerateFenixXml extends AnAction {
             containingClassName = "";
             qualifiedName = "";
         }
-        ClassInfo classInfo = new ClassInfo(containingClassName, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
+        ClassInfo classInfo = new ClassInfo(containingClassName, packageNameOf(qualifiedName));
         classInfo.setOpenFile(false);
         classInfo.setAnnotationInfoList(buildAnnotationInfoList(containingClass.getAnnotations()));
         MethodInfo methodInfo = MethodInfo.builder()
@@ -74,22 +81,55 @@ public class GenerateFenixXml extends AnAction {
             .annotationInfos(methodAnnotationInfoList)
             .methodParameters(toMethodParameters(parameterList)
             ).build();
-        Template template = getTemplate(methodTemplateName);
+        TemplateGroup templateGroup = resolveTemplateGroup(project, methodTemplateName, fileTemplateName);
+        if (templateGroup == null) {
+            return;
+        }
+        Template template = getRequiredTemplate(templateGroup, methodTemplateName);
         try {
             CodeGenerateService.getInstance(project).generateFenixXml(template, methodInfo);
         } catch (TargetTestFileNotFoundException targetTestFileNotFoundException) {
             //可能对应的文件不存在，如果不存在就先创建
-            Template testClassTemplate = getTemplate(fileTemplateName);
+            Template testClassTemplate = getRequiredTemplate(templateGroup, fileTemplateName);
             CodeGenerateService.getInstance(project).generateFenixXml(testClassTemplate, methodInfo.getClassInfo());
             CodeGenerateService.getInstance(project).generateFenixXml(template, methodInfo);
         }
     }
 
-    private Template getTemplate(String templateName) {
-        return Settings.getInstance().getTemplateGroupMap().get("Fenix")
-            .getElementList().stream()
-            .filter(t -> templateName.equals(t.getName()))
-            .findFirst().orElseThrow(() -> new RuntimeException("模板内容不存在"));
+    /**
+     * 按项目解析包含所需模板的模板组，缺省使用 Fenix 组
+     */
+    @Nullable
+    private static TemplateGroup resolveTemplateGroup(Project project, String... requiredTemplateNames) {
+        ProjectSettingModel state = ProjectLevelSettingsService.getInstance(project).getState();
+        if (state == null) {
+            state = new ProjectSettingModel();
+        }
+        return TemplateGroupResolver.resolveGroup(project, state.getFenixTemplateGroupName(), state::setFenixTemplateGroupName, requiredTemplateNames);
+    }
+
+    private static Template getRequiredTemplate(TemplateGroup templateGroup, String templateName) {
+        Template template = templateGroup.getTemplate(templateName);
+        if (template == null) {
+            throw new RuntimeException("模板内容不存在：" + templateName);
+        }
+        return template;
+    }
+
+    /**
+     * 去掉文件扩展名
+     */
+    private static String simpleNameOf(String classFileName) {
+        int dotIndex = classFileName.indexOf(".");
+        return dotIndex > 0 ? classFileName.substring(0, dotIndex) : classFileName;
+    }
+
+    /**
+     * 从全限定名中解析包名，默认包（无包名）返回空串
+     */
+    private static String packageNameOf(String qualifiedName) {
+        int lastDotIndex = qualifiedName.lastIndexOf(".");
+        return lastDotIndex < 0 ? "" : qualifiedName.substring(0, lastDotIndex);
     }
 
     @NotNull
@@ -113,8 +153,12 @@ public class GenerateFenixXml extends AnAction {
             return;
         }
         //文件创建所有的
-        ClassInfo classInfo = new ClassInfo(name, qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
-        Template template = getTemplate("fenix.file.xml");
+        ClassInfo classInfo = new ClassInfo(name, packageNameOf(qualifiedName));
+        TemplateGroup templateGroup = resolveTemplateGroup(project, "fenix.file.xml");
+        if (templateGroup == null) {
+            return;
+        }
+        Template template = getRequiredTemplate(templateGroup, "fenix.file.xml");
         CodeGenerateService.getInstance(project).generateFenixXml(template, classInfo);
     }
 

@@ -99,7 +99,7 @@ public class Settings implements PersistentStateComponent<Settings> {
      */
     public void initDefault() {
         // 版本号
-        this.version = "1.6.0";
+        this.version = "1.6.1";
         // 作者名称
         this.author = "makejava";
         // 当前各项分组名称
@@ -144,11 +144,12 @@ public class Settings implements PersistentStateComponent<Settings> {
     private void loadTemplateGroup() {
         this.templateGroupMap.put(DEFAULT_NAME,
             loadTemplateGroup(DEFAULT_NAME, "entity.java", "repository.java", "test.repository.java", "service.java", "test.service.java", "serviceImpl.java", "controller.java",
-                "test.controller.java",
-                "debug.json", "test.common.java"));
+                "debug.json"));
         this.templateGroupMap.put("Mybatis",
             loadTemplateGroup("Mybatis", "entity.java", "dao.java", "service.java", "serviceImpl.java", "controller.java", "mapper.xml", "debug.json"));
         this.templateGroupMap.put("MybatisPlus", loadTemplateGroup("MybatisPlus", "entity", "dao", "service", "serviceImpl", "controller"));
+        this.templateGroupMap.put("MybatisPlus-Mixed",
+            loadTemplateGroup("MybatisPlus-Mixed", "entity", "dao", "service", "serviceImpl", "controller", "mapper.xml"));
         this.templateGroupMap.put("Test", loadTemplateGroup("Test", "test.common", "test.method"));
         this.templateGroupMap.put("Fenix", loadTemplateGroup("Fenix", "fenix.file.xml", "fenix.method.xml"));
     }
@@ -249,10 +250,10 @@ public class Settings implements PersistentStateComponent<Settings> {
 
         // 模板备份
         TemplateGroup oldTemplateGroup = settings.getTemplateGroupMap().get(DEFAULT_NAME);
-        String newName = oldTemplateGroup.getName() + "Bak";
+        String newName = DEFAULT_NAME + "Bak";
         int i = 0;
         while (settings.getTemplateGroupMap().containsKey(newName)) {
-            newName = newName + i++;
+            newName = DEFAULT_NAME + "Bak" + (++i);
         }
         oldTemplateGroup.setName(newName);
         // 保存
@@ -267,10 +268,10 @@ public class Settings implements PersistentStateComponent<Settings> {
 
         // 全局配置备份
         GlobalConfigGroup oldGlobalConfigGroup = settings.getGlobalConfigGroupMap().get(DEFAULT_NAME);
-        newName = oldGlobalConfigGroup.getName() + "Bak";
+        newName = DEFAULT_NAME + "Bak";
         i = 0;
         while (settings.getGlobalConfigGroupMap().containsKey(newName)) {
-            newName = newName + i++;
+            newName = DEFAULT_NAME + "Bak" + (++i);
         }
         oldGlobalConfigGroup.setName(newName);
         // 保存

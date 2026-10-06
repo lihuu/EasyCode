@@ -1,7 +1,7 @@
 ##初始化区域
 
-##去掉表的t_前缀
-$!tableInfo.setName($tool.getClassName($tableInfo.obj.name.replaceFirst("book_","")))
+##示例：去掉表前缀（不同项目表前缀不同，按需修改前缀后取消注释）
+##$!tableInfo.setName($tool.getClassName($tableInfo.obj.name.replaceFirst("t_","")))
 
 ##参考阿里巴巴开发手册，POJO 类中布尔类型的变量，都不要加 is 前缀，否则部分框架解析会引起序列化错误
 #foreach($column in $tableInfo.fullColumn)
@@ -10,8 +10,8 @@ $!tableInfo.setName($tool.getClassName($tableInfo.obj.name.replaceFirst("book_",
 #end
 #end
 
-##实现动态排除列
-#set($temp = $tool.newHashSet("testCreateTime", "otherColumn"))
+##实现动态排除列（默认不排除任何列，需要时在集合中添加要排除的列名）
+#set($temp = $tool.newHashSet())
 #foreach($item in $temp)
     #set($newList = $tool.newArrayList())
     #foreach($column in $tableInfo.fullColumn)

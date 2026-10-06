@@ -39,6 +39,16 @@ public class ProjectSettingModel {
      */
     private String lastSelectedTemplateGroup;
 
+    /**
+     * 生成测试文件使用的模板组名
+     */
+    private String testTemplateGroupName;
+
+    /**
+     * 生成 fenix xml 使用的模板组名
+     */
+    private String fenixTemplateGroupName;
+
     private Map<String, String> moduleTestSrcMap;
 
     public String getLastSelectedTemplateGroup() {
@@ -46,6 +56,22 @@ public class ProjectSettingModel {
             return "Default";
         } else {
             return lastSelectedTemplateGroup;
+        }
+    }
+
+    public String getTestTemplateGroupName() {
+        if (StringUtils.isEmpty(testTemplateGroupName)) {
+            return "Test";
+        } else {
+            return testTemplateGroupName;
+        }
+    }
+
+    public String getFenixTemplateGroupName() {
+        if (StringUtils.isEmpty(fenixTemplateGroupName)) {
+            return "Fenix";
+        } else {
+            return fenixTemplateGroupName;
         }
     }
 

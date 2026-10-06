@@ -277,7 +277,7 @@ public class CodeGenerateForm extends JDialog {
     private void initTemplates() {
         checkBoxList.clear();
         templatesPannel.removeAll();
-        templatesPannel.setLayout(new GridLayout(6, 2));
+        templatesPannel.setLayout(new GridLayout(0, 2));
         templateGroup.getElementList().forEach(template -> {
             Logger.getInstance(CodeGenerateForm.class).info("模板的名称：" + template.getName());
             JCheckBox checkBox = new JCheckBox(template.getName());

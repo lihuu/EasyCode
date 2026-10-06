@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
@@ -17,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 可以根据entity自动生成对应的代码，不用从数据库中获取
@@ -26,6 +26,18 @@ import java.util.stream.Stream;
  * @since  2021/4/18 17:52
  */
 public class GenerateSimpleCode extends AnAction {
+
+    /**
+     * 识别为主键的注解全限定名，覆盖 javax/jakarta 的 JPA 注解与 MyBatis-Plus 注解
+     */
+    private static final List<String> PRIMARY_KEY_ANNOTATIONS = Arrays.asList(
+        "javax.persistence.Id",
+        "jakarta.persistence.Id",
+        "javax.persistence.EmbeddedId",
+        "jakarta.persistence.EmbeddedId",
+        "com.baomidou.mybatisplus.annotation.TableId"
+    );
+
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
@@ -37,16 +49,31 @@ public class GenerateSimpleCode extends AnAction {
         if (psiJavaFile == null) {
             return;
         }
+        PsiClass[] classes = psiJavaFile.getClasses();
+        if (classes.length == 0) {
+            return;
+        }
         String classFileName = psiJavaFile.getName();
-        ClassInfo classInfo = new ClassInfo(classFileName.substring(0, classFileName.indexOf(".")), ModuleUtils.getModulePath(psiJavaFile), psiJavaFile.getPackageName());
-        Stream<PsiField> psiFieldStream = Arrays.stream(psiJavaFile.getClasses()[0].getAllFields());
-        List<PsiField> allFields = psiFieldStream.toList();
-        List<PsiField> psiFieldList = allFields.stream().filter(f -> f.hasAnnotation("javax.persistence.Id")).toList();
+        ClassInfo classInfo = new ClassInfo(simpleNameOf(classFileName), ModuleUtils.getModulePath(psiJavaFile), psiJavaFile.getPackageName());
+        List<PsiField> allFields = Arrays.stream(classes[0].getAllFields()).toList();
+        List<PsiField> psiFieldList = allFields.stream().filter(GenerateSimpleCode::hasPrimaryKeyAnnotation).toList();
         if (!psiFieldList.isEmpty()) {
             classInfo.setPrimaryKeyProperties(psiFieldList.stream().map(GenerateSimpleCode::toPropertyInfo).collect(Collectors.toList()));
         }
         classInfo.setAllProperties(allFields.stream().map(GenerateSimpleCode::toPropertyInfo).collect(Collectors.toList()));
         new CodeGenerateForm(project, classInfo).open();
+    }
+
+    private static boolean hasPrimaryKeyAnnotation(PsiField psiField) {
+        return PRIMARY_KEY_ANNOTATIONS.stream().anyMatch(psiField::hasAnnotation);
+    }
+
+    /**
+     * 去掉文件扩展名
+     */
+    private static String simpleNameOf(String classFileName) {
+        int dotIndex = classFileName.indexOf(".");
+        return dotIndex > 0 ? classFileName.substring(0, dotIndex) : classFileName;
     }
 
     private static PropertyInfo toPropertyInfo(PsiField psiField) {
