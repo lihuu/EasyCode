@@ -14,7 +14,7 @@
 - `src/main/java/com/sjhy/plugin/entity/SaveFile.java`: overwrite/compare/append behavior and when generated files are opened.
 
 ### Templates and config conventions
-- Built-in templates live under `src/main/resources/template/<Group>/...`; group names must match `Settings.loadTemplateGroup()` keys (`Default`, `Mybatis`, `MybatisPlus`, `Test`, `Fenix`).
+- Built-in templates live under `src/main/resources/template/<Group>/...`; group names must match `Settings.loadTemplateGroup()` keys (`Default`, `Mybatis`, `MybatisPlus`, `MybatisPlus-Mixed`, `Test`, `Fenix`).
 - Global config snippets live under `src/main/resources/globalConfig/Default/*.vm` and are injected by `TemplateUtils.addGlobalConfig(...)` before Velocity rendering.
 - Templates can steer output via `Callback`; example: `src/main/resources/template/Fenix/fenix.file.xml.vm` sets `$callback.setFileName(...)`.
 - Velocity helper variables are documented in `src/main/java/velocity_implicit.vm`; keep that file in sync if you add template context variables.
@@ -26,11 +26,11 @@
 - `SaveFile` treats in-project paths differently from external paths and supports append mode for generated test methods / XML fragments.
 
 ### Build, run, test
-- Use Java 21 for Gradle work. Verified: the project fails under local JDK 25 with `java.lang.IllegalArgumentException: 25`, but succeeds with JDK 21.
-- Verified commands:
+- Gradle runs on the local JDK 25 (GraalVM CE, the `java_home` default); the user standardized all personal projects and this plugin on JDK 25. Supporting versions: Gradle 9.8.0, `org.jetbrains.intellij.platform` 2.19.0, Lombok 1.18.48.
+- Platform/bytecode alignment (2026-10): dev platform is the unified `intellijIdea("2026.2")` (`ideaIC`/`ideaIU` are no longer published since 2025.3), bytecode target is 25 matching the IDE's bundled JBR 25, `sinceBuild=262` with no `untilBuild`. The user's IDE is IDEA 2026.2 (JBR 25.0.4).
+- commons-collections 3.x is no longer bundled with the platform since 2026.2; it is declared explicitly in `build.gradle.kts`.
+- If the Gradle wrapper download stalls (`SSL peer shut down incorrectly`), download the distribution with curl and unpack it into `~/.gradle/wrapper/dists/gradle-<v>-bin/<base36-of-md5-of-url>/` with a `<zip>.ok` marker.
 ```bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 21)
-export PATH="$JAVA_HOME/bin:$PATH"
 ./gradlew tasks --all
 ./gradlew test
 ```
@@ -39,7 +39,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 
 ### Project-specific gotchas
 - Do not edit generated artifacts under `build/`; change source files under `src/main/...` and let Gradle regenerate patched plugin metadata.
-- `build.gradle.kts` sets Java source/target to 21 and plugin compatibility to `sinceBuild=233`, `untilBuild=253.*`; runtime metadata is patched from Gradle, so prefer updating build config over edited copies in `build/`.
+- `build.gradle.kts` sets Java source/target to 25 and plugin compatibility to `sinceBuild=262` with no `untilBuild`; runtime metadata is patched from Gradle, so prefer updating build config over edited copies in `build/`.
 - Current unit tests use JUnit 4 (`src/test/java/...`), while generated test templates import JUnit 5 (`org.junit.jupiter.api.Test`); keep that mismatch in mind before changing test dependencies or templates.
 - When adding a new template group or built-in resource, wire it through `Settings.initDefault()` / `loadTemplateGroup()` or it will never appear in the UI.
 

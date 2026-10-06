@@ -6,7 +6,7 @@ fun properties(key: String) = project.findProperty(key).toString()
 // 第三方的组件使用全名 
 plugins {
     java
-    id("org.jetbrains.intellij.platform") version "2.5.0"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
 }
 
 group = properties("pluginGroup")
@@ -51,36 +51,37 @@ intellijPlatform {
         name = properties("pluginName")
 
         ideaVersion {
-            sinceBuild.set("233")
-            untilBuild.set("253.*")
+            sinceBuild.set("262")
+            untilBuild.set(provider { null })
         }
     }
 }
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2024.3")
+        intellijIdea("2026.2")
         bundledPlugin("com.intellij.java")
     }
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
-    compileOnly("org.projectlombok:lombok:1.18.34")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    implementation("commons-collections:commons-collections:3.2.2")
+    compileOnly("org.projectlombok:lombok:1.18.48")
+    annotationProcessor("org.projectlombok:lombok:1.18.48")
     testImplementation("junit:junit:4.13.2")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.48")
 }
 
 
 tasks {
     compileJava {
         options.encoding = "UTF-8"
-        sourceCompatibility = "21"
-        targetCompatibility = "21"
+        sourceCompatibility = "25"
+        targetCompatibility = "25"
     }
 
     compileTestJava {
         options.encoding = "UTF-8"
-        sourceCompatibility = "21"
-        targetCompatibility = "21"
+        sourceCompatibility = "25"
+        targetCompatibility = "25"
     }
 
     wrapper {
