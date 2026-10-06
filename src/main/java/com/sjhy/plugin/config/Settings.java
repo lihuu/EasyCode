@@ -78,6 +78,11 @@ public class Settings implements PersistentStateComponent<Settings> {
     private String author;
 
     /**
+     * 项目打开时是否自动创建 AI 代码生成模板 Skill 脚手架(.agents/skills)
+     */
+    private boolean autoCreateProjectSkill = true;
+
+    /**
      * 获取单例实例对象
      *
      * @return 实例对象

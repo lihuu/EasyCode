@@ -54,6 +54,8 @@
         <projectService serviceInterface="com.sjhy.plugin.service.ProjectLevelSettingsService" serviceImplementation="com.sjhy.plugin.service.impl.ProjectLevelSettingsServiceImpl"/>
         <!--系统设置面板-->
         <applicationConfigurable dynamic="true" instance="com.sjhy.plugin.ui.MainSetting"/>
+        <!--项目打开时自动创建 AI 代码生成模板 Skill 脚手架-->
+        <postStartupActivity implementation="com.sjhy.plugin.startup.ProjectSkillInitializer"/>
 
        <!-- <projectConfigurable parentId="tools" instance="com.sjhy.plugin.service.impl.ProjectLevelSettingsServiceImpl"
                              id="com.sjhy.plugin.service.impl.ProjectLevelSettingsServiceImpl" displayName="My Project Settings"

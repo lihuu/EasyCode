@@ -63,6 +63,11 @@ public class MainSetting implements Configurable, Configurable.Composite {
     private JTextField testFilePath;
 
     /**
+     * 项目打开时自动创建 AI 模板 Skill 的开关
+     */
+    private final JCheckBox skillCheckBox = new JCheckBox("打开项目时自动创建 AI 代码生成模板 Skill（.agents/skills）");
+
+    /**
      * 重置列表
      */
     private List<Configurable> resetList;
@@ -301,6 +306,7 @@ public class MainSetting implements Configurable, Configurable.Composite {
         //初始化数据
         versionLabel.setText(settings.getVersion());
         authorTextField.setText(settings.getAuthor());
+        skillCheckBox.setSelected(settings.isAutoCreateProjectSkill());
     }
 
     /**
@@ -364,7 +370,11 @@ public class MainSetting implements Configurable, Configurable.Composite {
     @Nullable
     @Override
     public JComponent createComponent() {
-        return mainPanel;
+        //包装一层放置项目Skill开关，避免改动form绑定
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.add(skillCheckBox, BorderLayout.NORTH);
+        wrapper.add(mainPanel, BorderLayout.CENTER);
+        return wrapper;
     }
 
     /**
@@ -374,7 +384,8 @@ public class MainSetting implements Configurable, Configurable.Composite {
      */
     @Override
     public boolean isModified() {
-        return !settings.getAuthor().equals(authorTextField.getText());
+        return !settings.getAuthor().equals(authorTextField.getText())
+            || skillCheckBox.isSelected() != settings.isAutoCreateProjectSkill();
     }
 
     /**
@@ -384,6 +395,7 @@ public class MainSetting implements Configurable, Configurable.Composite {
     public void apply() {
         //保存数据
         settings.setAuthor(authorTextField.getText());
+        settings.setAutoCreateProjectSkill(skillCheckBox.isSelected());
     }
 
     /**

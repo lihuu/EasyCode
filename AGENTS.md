@@ -24,6 +24,7 @@
 - UI classes often have paired `.java` + `.form` files in `src/main/java/com/sjhy/plugin/ui/`; avoid changing generated form bindings from code only.
 - `ModuleUtils` prefers real source roots and falls back to `src/main/java`; path handling assumes `/` separators and often stores project-relative paths starting with `.`.
 - `SaveFile` treats in-project paths differently from external paths and supports append mode for generated test methods / XML fragments.
+- On project open, `startup/ProjectSkillInitializer` (postStartupActivity) writes `.agents/skills/easy-code-templates/SKILL.md` (resource `skill/project-skill.md`) into Java projects, unless the file already exists or `Settings.autoCreateProjectSkill` is off (checkbox on the main settings page). Never overwrite an existing SKILL.md.
 
 ### Build, run, test
 - Gradle runs on the local JDK 25 (GraalVM CE, the `java_home` default); the user standardized all personal projects and this plugin on JDK 25. Supporting versions: Gradle 9.8.0, `org.jetbrains.intellij.platform` 2.19.0, Lombok 1.18.48.
